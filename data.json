@@ -1,21 +1,21 @@
 {
     "arabica": [
         {
-            "foto": "images/produk/product_capuchino.jpg",
+            "foto": "assets/images/produk/product_capuchino.jpg",
             "nama": "Cappuccino Arabica",
             "size": "500 Gram",
             "harga": "200.000",
             "link": "https://www.google.com/search?q=cappuccino+arabica&tbm=shop"
         },
         {
-            "foto": "images/produk/product_espresso.jpg",
+            "foto": "assets/images/produk/product_espresso.jpg",
             "nama": "Pahit Arabica",
             "size": "100 Gram",
             "harga": "100.000",
             "link": "https://www.google.com/search?q=pahit+arabica&tbm=shop"
         },
         {
-            "foto": "images/produk/product_latte.jpg",
+            "foto": "assets/images/produk/product_latte.jpg",
             "nama": "Latte Arabica",
             "size": "150 Gram",
             "harga": "150.000",
@@ -24,14 +24,14 @@
     ],
     "robusta": [
         {
-            "foto": "images/produk/product_kopi_susu.jpg",
+            "foto": "assets/images/produk/product_kopi_susu.jpg",
             "nama": "Kopsus Robusta",
             "size": "100 Gram",
             "harga": "500.000",
             "link": "https://www.google.com/search?q=kopi+susu+robusta&tbm=shop"
         },
         {
-            "foto": "images/produk/product_latte.jpg",
+            "foto": "assets/images/produk/product_latte.jpg",
             "nama": "Latte Robusta",
             "size": "150 Gram",
             "harga": "150.000",
@@ -40,21 +40,21 @@
     ],
     "makanberat": [
         {
-          "foto": "images/produk/naspad.jpeg",
+          "foto": "assets/images/produk/naspad.jpeg",
           "nama": "Nasi Padang",
           "size": "1 porsi",
           "harga": "30.000",
           "link": "https://www.google.com/search?q=nasi+padang"
         },
         {
-          "foto": "images/produk/ayamgeprek.jpg",
+          "foto": "assets/images/produk/ayamgeprek.jpg",
           "nama": "Ayam Geprek",
           "size": "1 porsi",
           "harga": "25.000",
           "link": "https://www.google.com/search?q=ayam+geprek"
         },
         {
-          "foto": "images/produk/baso.png",
+          "foto": "assets/images/produk/baso.png",
           "nama": "Bakso Urat",
           "size": "1 porsi",
           "harga": "15.000",

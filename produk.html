@@ -7,17 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="assets/images/favicon/favicon.ico" type="image/x-icon">
     <title>product</title>
+    <meta name="description" content="KopiKuy menghadirkan kopi berkualitas premium untuk penggemar kopi sejati">
+    <meta name="keywords" content="Kopi premium, biji kopi pilihan, kopi terbaik">
+    <meta name="author" content="John Doe">
     <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-icons.css">
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/jquery-3.6.3.min.js"></script>
     <style>
-        /* tulis kode CSS internal di bawah sini */
 
-
-
-        /* Batas Akhir penulisan kode CSS internal */
     </style>
 </head>
 
@@ -52,113 +51,46 @@
                         <a class="nav-link" href="index.html#contact-us">Contact Us</a>
                     </li>
                 </ul>
-                <a class="btn btn-outline-light" href="https://wa.me/628123456?text=Saya ingin bertanya" target="_blank">Chat <i class="bi bi-whatsapp"></i></a>
+                <a href="cart.html" class="btn btn-outline-light position-relative">
+                    <i class="bi bi-cart4"></i>
+                    <span id="cartIcon"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
+                <a class="btn btn-outline-light ms-md-3" href="https://wa.me/628123456?text=Saya ingin bertanya"
+                    target="_blank">Chat <i class="bi bi-whatsapp"></i></a>
             </div>
         </div>
     </nav>
 
     <section class="product text-center mt-5 py-5">
         <div class="container">
+
             <h1>Pilih product Anda</h1>
             <p class="fs-4">Kualitas terbaik biji kopi coffeeOptions, Fresh diambil langsung dari petani</p>
             <hr class="border border-success border-3 opacity-75">
+
             <div class="form-floating col-md-4 mx-auto my-5">
-                <select class="form-select" id="selectCoffee">
-                    <option selected disabled>-</option>
+                <select class="form-select" id="selectCategory">
+                    <option selected value="viewAll">All category</option>
                     <option value="arabica">Arabica</option>
                     <option value="robusta">Robusta</option>
+                    <option value="nonkopi">nonkopi</option>
                     <option value="makanberat">Makanan</option>
                 </select>
-                <label for="selectCoffee">Pilih Jenis Kopi</label>
+                <label for="selectCategory">Pilih Jenis Kopi</label>
             </div>
 
             <div id="productPage" class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
-
-                <div class="col mb-4">
-                    <div class="card">
-                        <img src="assets/images/produk/product_capuchino.jpg" class="card-img-top" alt="cappucino coffee">
-                        <div class="card-body">
-                            <h3 class="card-title">Cappucinno</h3>
-                            <p>A classic Italian coffee, steamed milk</p>
-                            <div class="row hargasize my-4">
-                                <div class="col">
-                                    200 ml
-                                </div>
-                                <div class="col text-primary fw-bold">
-                                    20.000
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-success w-100"><i class="bi bi-cart4"></i> Buy product</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col mb-4">
-                    <div class="card">
-                        <img src="assets/images/produk/product_espresso.jpg" class="card-img-top" alt="cappucino coffee">
-                        <div class="card-body">
-                            <h3 class="card-title">Espresso</h3>
-                            <p>A classic Italian coffee, steamed milk</p>
-                            <div class="row hargasize my-4">
-                                <div class="col">
-                                    200 ml
-                                </div>
-                                <div class="col text-primary fw-bold">
-                                    20.000
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-success w-100"><i class="bi bi-cart4"></i> Buy product</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col mb-4">
-                    <div class="card">
-                        <img src="assets/images/produk/product_kopi_susu.jpg" class="card-img-top" alt="cappucino coffee">
-                        <div class="card-body">
-                            <h3 class="card-title">Moccacino</h3>
-                            <p>A classic Italian coffee, steamed milk</p>
-                            <div class="row hargasize my-4">
-                                <div class="col">
-                                    200 ml
-                                </div>
-                                <div class="col text-primary fw-bold">
-                                    20.000
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-success w-100"><i class="bi bi-cart4"></i> Buy product</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col mb-4">
-                    <div class="card">
-                        <img src="assets/images/produk/product_latte.jpg" class="card-img-top" alt="cappucino coffee">
-                        <div class="card-body">
-                            <h3 class="card-title">Latte</h3>
-                            <p>A classic Italian coffee, steamed milk</p>
-                            <div class="row hargasize my-4">
-                                <div class="col">
-                                    200 ml
-                                </div>
-                                <div class="col text-primary fw-bold">
-                                    20.000
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-success w-100"><i class="bi bi-cart4"></i> Buy product</a>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-        </div>
-
 
         </div>
     </section>
 
     <footer class="bg-success py-4">
         <div class="container">
+
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <ul class="nav">
@@ -179,10 +111,13 @@
                         </li>
                     </ul>
                 </div>
+
                 <div class="col-md-4 text-light text-end">
                     Copyright Kopi Kuy 2024
                 </div>
+
             </div>
+
         </div>
     </footer>
 
@@ -191,45 +126,116 @@
     <script>
         /* Tulis Javascript Di bawah Sini */
 
-        let endpoint = "https://rikikurnia.com/prakerja/api/kopi"
-        let localData = "data.json"
+        let webApi = "https://rikikurnia.com/prakerja/api/kopi"
+        let localApi = "data.json"
 
-        let coffeeOptions = ""
+        function getProductData(category) {
 
-        selectCoffee.onchange = function () {
-            coffeeOptions = selectCoffee.value
-            getCoffeeData(coffeeOptions)
-        }
-
-        function getCoffeeData() {
-            console.log(coffeeOptions)
-
-            $.getJSON(endpoint).then(function (data) {
-                let selectedCoffee = data[coffeeOptions]
-                productPage.innerHTML = ""
-                console.log(selectedCoffee)
-
-                selectedCoffee.forEach( coffee => {
-                    productPage.innerHTML += `<div class="col mb-4">
-                            <div class="card">
-                                <img src="${coffee.foto}" class="card-img-top" alt="...">
-                                <div class="card-body">
-                                    <h3 class="card-title">${coffee.nama}</h3>
-                                    <div class="row my-4">
-                                        <div class="col">
-                                            ${coffee.size}
-                                        </div>
-                                        <div class="col">
-                                            ${coffee.harga}
-                                        </div>
-                                    </div>
-                                    <a href="${coffee.link}" class="btn btn-success w-100"><i class="bi bi-cart4"></i> Beli</a>
-                                </div>
-                            </div>
-                        </div>`
+            if (category === "viewAll") {
+                $.when($.getJSON(webApi), $.getJSON(localApi)).then(function (
+                    datawebApi,
+                    datalocalApi
+                ) {
+                    selectedCategory = [
+                        ...datawebApi[0].robusta,
+                        ...datawebApi[0].arabica,
+                        ...datawebApi[0].nonkopi,
+                        ...datalocalApi[0].makanberat,
+                    ];
+                    shuffleArray(selectedCategory);
+                    console.log(selectedCategory)
+                    showProducts(selectedCategory);
+                    
                 });
-            })
+            } else if (category === "makanberat") {
+                console.log("makan bang")
+                $.getJSON(localApi).then(function (data) {
+                    showProducts(data.makanberat);
+                });
+            } else {
+                $.getJSON(webApi).then(function (data) {
+                    showProducts(data[category]);
+                });
+            }
         }
+
+        function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+
+        function showProducts(selectedCategory) {
+            productPage.innerHTML = ""
+
+            selectedCategory.forEach(product => {
+                productPage.innerHTML += `<div class="col mb-4">
+                        <dv class="card">
+                            <img src="${product.foto}" class="card-img-top" alt="menu ${product.nama}">
+
+                            <div class="card-body">
+                                <h3 class="card-title">${product.nama}</h3>
+
+                                <div class="row my-4">
+                                    <div class="col">
+                                        ${product.size}
+                                    </div>
+
+                                    <div class="col">
+                                        ${product.harga}
+                                    </div>
+                                </div>
+                                            
+                                    <button onclick='addToCart(${JSON.stringify({
+                                        nama: product.nama,
+                                        harga: product.harga,
+                                        foto: product.foto,
+                                        hargaint: product.harga.split(".").join("") * 1,
+                                        qty: 1,
+                                    }
+                                    )})' href="${product.link}" class="addToCart btn btn-success w-100"><i class="bi bi-cart4"></i> Add To Cart</button>
+                            </div>
+                        </div>
+                    </div>`
+            });
+        }
+
+    
+
+        $(document).ready(function () {
+            getProductData("viewAll");
+
+            $("#selectCategory").change(function () {
+                let category = $(this).val();
+                getProductData(category);
+            });
+        });
+
+
+        let cart = [];
+
+        function addToCart(item) {
+            cart.push(item);
+            updateLocalStorage();
+        }
+
+        function updateLocalStorage() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartIcon();
+        }
+
+        function updateCartIcon() {
+            let cartIcon = document.getElementById("cartIcon");
+            cartIcon.classList.add("d-none");
+            let storedCart = localStorage.getItem("cart");
+            if (storedCart != null) {
+                let parsedCart = JSON.parse(storedCart);
+                cartIcon.textContent = parsedCart.length;
+                if (parsedCart.length > 0) cartIcon.classList.remove("d-none");
+            }
+        }
+        updateCartIcon();
 
         /* Batas Akhir penulisan kode Javascript */
     </script>

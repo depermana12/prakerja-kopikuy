@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <title>Website Kopi Kuy</title>
+    <meta name="description" content="KopiKuy menghadirkan kopi berkualitas premium untuk penggemar kopi sejati">
+    <meta name="keywords" content="Kopi premium, biji kopi pilihan, kopi terbaik">
+    <meta name="author" content="John Doe">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-icons.css" />
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/jquery-3.6.3.min.js"></script>
+
+    <style>
+        body {
+            background-color: #F0F3F7;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        .cart-container {
+            clear: both;
+            margin-bottom: 25px;
+            margin-top: 0;
+            padding: 0;
+        }
+
+        .cart-title {
+            background-color: #ffffff;
+            padding: 14px 15px 7px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .cart-content {
+            background-color: #ffffff;
+            padding: 15px 20px 20px 20px;
+            border-color: #e7eaec;
+            border-style: solid solid none;
+            border-width: 1px 0;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-success navbar-dark w-100 fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img class="logo" src="assets/images/logo/logo_kuy.png" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto me-3 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#best-seller">Best Seller</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#our-team">Our Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#review">Review</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#contact-us">Contact Us</a>
+                    </li>
+                </ul>
+
+                <a class="btn btn-outline-light ms-md-3" href="https://wa.me/628123456?text=Saya ingin bertanya"
+                    target="_blank">Chat <i class="bi bi-whatsapp"></i></a>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="cart">
+
+
+        <div class="row gx-3 py-5">
+            <div class="col-sm-8">
+                <div class="cart-container">
+                    <div class="cart-title">
+                        <span class="pull-right">(<strong>5</strong>) items</span>
+                        <h5>Items in your cart</h5>
+                    </div>
+
+                    <div class="cart-content" id="cartContent">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-4">
+                <div class="cart-container">
+
+                    <div class="cart-title">
+                        <h5>Cart Summary</h5>
+                    </div>
+
+                    <div class="cart-content">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between align-items-center pb-3">
+                                    <span>Total</span>
+                                    <span class="fs-4 fw-bold" id="pricePlaceHolder">0</span>
+                                </div>
+                                <span id="couponDetails" style="display: block;"></span>
+                                <hr>
+
+                                <div class="row">
+                                    <p>Discount 50% enter code: PRAKERJA</p>
+                                    <div class="col-sm-8 pb-3">
+                                        <input type="text" class="form-control" id="coupon" placeholder="Coupon Code">
+                                    </div>
+                                    <div class="col-sm-4 pb-3 align-items-center d-flex">
+                                        <button class="btn btn-outline-success w-100"
+                                            onclick="checkCoupon()">Redeem</button>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="col-md-12 pb-3">
+                                <a href="#" class="btn btn-success d-block w-100" id="checkoutButton"><i
+                                        class="fa fa-shopping-cart"></i>Checkout</a>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        </div>
+        </div>
+        </div>
+
+
+    </section>
+
+
+
+    <footer class="bg-success footer py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link link-light active" aria-current="page" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-light" href="index.html#best-seller">Best Seller</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-light" href="index.html#our-team">Our Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-light" href="index.html#review">Review</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-light" href="index.html#contact-us">Contact Us</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-light text-end">
+                    Copyright Kopi Kuy 2024
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+
+        let temporaryCart = [];
+        let totalPrice = 0;
+        let couponApplied = false;
+        let originalPrice = 0;
+
+        function updateCartLocalStorage() {
+            let cartData = localStorage.getItem("cart");
+
+            if (cartData != null) {
+                let cartItems = JSON.parse(localStorage.getItem("cart"));
+
+                cartItems.forEach((product) => {
+                    calculateTotalPrice(product.hargaint);
+                    updateTemporaryCart(product);
+
+                });
+
+                updateCartDisplay();
+            }
+        }
+
+        updateCartLocalStorage();
+
+        function calculateTotalPrice(hargaProduk) {
+            totalPrice += hargaProduk;
+        }
+
+        function updateTemporaryCart(product) {
+            let indexItems = temporaryCart.findIndex((productTMP) => {
+                if (productTMP.nama === product.nama) {
+                    return true;
+                }
+                return false;
+            });
+
+            if (indexItems !== -1) {
+                temporaryCart[indexItems].qty = temporaryCart[indexItems].qty + 1;
+            } else {
+                temporaryCart.push(product);
+            }
+        }
+
+        function updateCartDisplay() {
+
+            let template_list = ``;
+            temporaryCart.forEach((product, index) => {
+                template_list += `<div class="cart-content">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="${product.foto}" height="90" width="90" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <h5 class="fw-normal">${product.nama}</h5>
+                                            <div class="row">
+                                                <div class="col-md-6 d-flex align-items-center">
+                                                    <span class="fw-bold">Rp${formatNumber(product.hargaint)}</span>
+                                                </div>
+                                                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                                    <button onclick="removeProduct(${index})" class="btn btn-white me-2">
+                                                        <i class="bi bi-trash" style="font-size: 22px;"></i>
+                                                    </button>
+                                
+                                                    <input class="form-control" type="number" style="width: 60px;" value="${product.qty}" min="1"
+                                                        onchange="productQtyChanges(${index}, this.value)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+            });
+            cartContent.innerHTML = template_list;
+            // hehe
+            pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
+        }
+
+        function productQtyChanges(index, newValue) {
+            temporaryCart[index].qty = newValue;
+            recalculateTotalPrice();
+            updateCartDisplay();
+        }
+
+        function recalculateTotalPrice() {
+            totalPrice = 0;
+            temporaryCart.forEach((product) => {
+                totalPrice += product.hargaint * product.qty;
+            });
+        }
+
+        function removeProduct(index) {
+            totalPrice = totalPrice - temporaryCart[index].hargaint;
+
+            let cartData = localStorage.getItem("cart");
+            let cartItems = JSON.parse(
+                localStorage.getItem("cart")
+            );
+            let productName = temporaryCart[index].nama;
+
+            let indexItems = cartItems.findIndex((productTMP) => {
+                if (productTMP.nama === productName) {
+                    return true;
+                }
+                return false;
+            });
+
+            if (indexItems !== -1) {
+                cartItems.splice(indexItems, 1);
+                localStorage.setItem(
+                    "cart",
+                    JSON.stringify(cartItems)
+                );
+            }
+            if (temporaryCart[index].qty > 1) {
+                temporaryCart[index].qty = temporaryCart[index].qty - 1;
+            } else {
+                temporaryCart.splice(index, 1);
+            }
+            updateCartDisplay();
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+
+        function checkCoupon() {
+            if (couponApplied) {
+                alert("Coupon has already been applied");
+                return;
+            }
+
+            redeemCoupon();
+        }
+
+        function redeemCoupon() {
+
+            let couponCode = document.getElementById("coupon").value.trim();
+            let couponInfo = document.getElementById("couponDetails");
+
+            if (couponCode === "PRAKERJA") {
+                if (temporaryCart.length < 1) {
+                    alert("Please add a product first");
+                }
+                originalPrice = totalPrice;
+                totalPrice *= 0.5;
+                couponApplied = true;
+                couponInfo.innerHTML = `Original Price: Rp ${formatNumber(originalPrice)}<br>Discounted Price: Rp ${formatNumber(totalPrice)}<br>Coupon Applied: <span class="badge bg-secondary">${couponCode}</span> <button onclick="removeDiscount()" class="btn btn-white me-2"><i class="bi bi-trash"></i></button>`;
+                couponInfo.style.display = "block";
+
+                updateCartDisplay();
+            } else {
+                alert("Invalid coupon code");
+            }
+        }
+
+        function removeDiscount() {
+            totalPrice = originalPrice
+            pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
+            couponApplied = false;
+            let couponInfo = document.getElementById("couponDetails");
+            couponInfo.style.display = "none";
+        }
+
+        document.getElementById('checkoutButton').addEventListener('click', function () {
+            alert("Sorry, checkout page not developed yet! Hehehe");
+        });
+
+    </script>
+
+</body>
+
+</html>
