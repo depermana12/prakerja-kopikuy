@@ -233,6 +233,9 @@
                                             </div>
                                         </div>`;
                 pricePlaceHolder.innerHTML = 0;
+                couponApplied = false;
+                let couponInfo = document.getElementById("couponDetails");
+                couponInfo.style.display = "none";
             } else {
                 let template_list = ``;
                 temporaryCart.forEach((product, index) => {
@@ -332,6 +335,7 @@
             if (couponCode === "PRAKERJA") {
                 if (temporaryCart.length < 1) {
                     alert("Please add a product first");
+                    return;
                 }
                 originalPrice = totalPrice;
                 totalPrice *= 0.5;
