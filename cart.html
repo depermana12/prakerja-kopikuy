@@ -44,12 +44,18 @@
             border-color: #e7eaec;
             border-style: solid solid none;
             border-width: 1px 0;
+            border-radius: 0 0 10px 10px;
         }
 
         .footer {
             position: fixed;
             bottom: 0;
             width: 100%;
+        }
+        @media (max-width:768px) {
+            .carts {
+                margin: 0 10px 0 10px;
+            }
         }
     </style>
 </head>
@@ -91,7 +97,7 @@
     </nav>
 
 
-    <section class="cart">
+    <section class="carts">
         <div class="row gx-3 py-5">
             <div class="col-sm-8">
                 <div class="cart-container">
@@ -240,28 +246,27 @@
                 let template_list = ``;
                 temporaryCart.forEach((product, index) => {
                     template_list += `<div class="cart-content">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <img src="${product.foto}" height="90" width="90" />
-                                        </div>
-                                        <div class="col-md-10">
-                                            <h5 class="fw-normal">${product.nama}</h5>
-                                            <div class="row">
-                                                <div class="col-md-6 d-flex align-items-center">
-                                                    <span class="fw-bold">Rp${formatNumber(product.hargaint)}</span>
-                                                </div>
-                                                <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                                    <button onclick="removeProduct(${index})" class="btn btn-white me-2">
-                                                        <i class="bi bi-trash" style="font-size: 22px;"></i>
-                                                    </button>
-                                
-                                                    <input class="form-control" type="number" style="width: 60px;" value="${product.qty}" min="1"
-                                                        onchange="productQtyChanges(${index}, this.value)">
+                                        <div class="row">
+                                            <div class="col-md-2 text-center">
+                                                <img src="${product.foto}" height="90" width="90" />
+                                            </div>
+                                            <div class="col-md-10">
+                                                <h5 class="fw-normal text-md-start text-center mt-3 mt-md-0">${product.nama}</h5>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-6 d-flex align-items-center">
+                                                        <span class="fw-bold">Rp${formatNumber(product.hargaint)}</span>
+                                                    </div>
+                                                    <div class="col-md-6 col-6 d-flex justify-content-end align-items-center">
+                                                        <button onclick="removeProduct(${index})" class="btn btn-white me-2">
+                                                            <i class="bi bi-trash" style="font-size: 22px;"></i>
+                                                        </button>
+                                                        <input class="form-control" type="number" style="width: 60px;" value="${product.qty}" min="1"
+                                                            onchange="productQtyChanges(${index}, this.value)">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>`;
+                                    </div>`;
                 });
                 cartContent.innerHTML = template_list;
                 // hehe
