@@ -25,6 +25,13 @@
 
     <nav class="navbar navbar-expand-lg bg-success navbar-dark w-100 fixed-top">
         <div class="container-fluid">
+            <div class="d-flex justify-content-end">
+                <a href="cart.html" class="btn btn-outline-light position-relative d-lg-none text-end">
+                    <i class="bi bi-cart4"></i>
+                    <span id="cartIcon"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                </a>
+            </div>
             <a class="navbar-brand" href="#">
                 <img class="logo" src="assets/images/logo/logo_kuy.png" height="40">
             </a>
@@ -51,14 +58,11 @@
                         <a class="nav-link" href="index.html#contact-us">Contact Us</a>
                     </li>
                 </ul>
-                <a href="cart.html" class="btn btn-outline-light position-relative">
+                <a href="cart.html" class="btn btn-outline-light position-relative d-none d-lg-inline me-md-3">
                     <i class="bi bi-cart4"></i>
-                    <span id="cartIcon"
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        0
-                    </span>
+                    <span id="cartIcon" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                 </a>
-                <a class="btn btn-outline-light ms-md-3" href="https://wa.me/628123456?text=Saya ingin bertanya"
+                <a class="btn btn-outline-light" href="https://wa.me/628123456?text=Saya ingin bertanya"
                     target="_blank">Chat <i class="bi bi-whatsapp"></i></a>
             </div>
         </div>
@@ -66,11 +70,9 @@
 
     <section class="product text-center mt-5 py-5">
         <div class="container">
-
             <h1>Pilih product Anda</h1>
             <p class="fs-4">Kualitas terbaik biji kopi coffeeOptions, Fresh diambil langsung dari petani</p>
             <hr class="border border-success border-3 opacity-75">
-
             <div class="form-floating col-md-4 mx-auto my-5">
                 <select class="form-select" id="selectCategory">
                     <option selected value="viewAll">All category</option>
@@ -81,16 +83,13 @@
                 </select>
                 <label for="selectCategory">Pilih Jenis Kopi</label>
             </div>
-
             <div id="productPage" class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
             </div>
-
         </div>
     </section>
 
     <footer class="bg-success py-4">
         <div class="container">
-
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <ul class="nav">
@@ -111,13 +110,10 @@
                         </li>
                     </ul>
                 </div>
-
                 <div class="col-md-4 text-light text-end">
                     Copyright Kopi Kuy 2024
                 </div>
-
             </div>
-
         </div>
     </footer>
 
@@ -145,7 +141,7 @@
                     shuffleArray(selectedCategory);
                     console.log(selectedCategory)
                     showProducts(selectedCategory);
-                    
+
                 });
             } else if (category === "makanberat") {
                 console.log("makan bang")
@@ -160,48 +156,44 @@
         }
 
         function shuffleArray(arr) {
-                for (let i = arr.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [arr[i], arr[j]] = [arr[j], arr[i]];
-                }
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
+        }
 
         function showProducts(selectedCategory) {
             productPage.innerHTML = ""
 
             selectedCategory.forEach(product => {
                 productPage.innerHTML += `<div class="col mb-4">
-                        <dv class="card">
-                            <img src="${product.foto}" class="card-img-top" alt="menu ${product.nama}">
-
-                            <div class="card-body">
-                                <h3 class="card-title">${product.nama}</h3>
-
-                                <div class="row my-4">
-                                    <div class="col">
-                                        ${product.size}
-                                    </div>
-
-                                    <div class="col">
-                                        ${product.harga}
-                                    </div>
-                                </div>
-                                            
-                                    <button onclick='addToCart(${JSON.stringify({
-                                        nama: product.nama,
-                                        harga: product.harga,
-                                        foto: product.foto,
-                                        hargaint: product.harga.split(".").join("") * 1,
-                                        qty: 1,
-                                    }
-                                    )})' href="${product.link}" class="addToCart btn btn-success w-100"><i class="bi bi-cart4"></i> Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>`
+                                            <dv class="card">
+                                                <img src="${product.foto}" class="card-img-top" alt="menu ${product.nama}">
+                                                <div class="card-body">
+                                                    <h3 class="card-title">${product.nama}</h3>
+                                                    <div class="row my-4">
+                                                        <div class="col">
+                                                            ${product.size}
+                                                        </div>
+                                                        <div class="col">
+                                                            ${product.harga}
+                                                        </div>
+                                                    </div>                                         
+                                                        <button onclick='addToCart(${JSON.stringify({
+                                                            nama: product.nama,
+                                                            harga: product.harga,
+                                                            foto: product.foto,
+                                                            hargaint: product.harga.split(".").join("") * 1,
+                                                            qty: 1,
+                                                        })
+                    })' href="${product.link}" class="addToCart btn btn-success w-100"><i class="bi bi-cart4"></i> Add To Cart</button>
+                                                </div>
+                                            </div>
+                                        </div>`
             });
         }
 
-    
+
 
         $(document).ready(function () {
             getProductData("viewAll");
@@ -211,7 +203,6 @@
                 getProductData(category);
             });
         });
-
 
         let cart = [];
 
