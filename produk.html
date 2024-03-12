@@ -16,15 +16,13 @@
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/jquery-3.6.3.min.js"></script>
     <style>
-        
-    body {
-        background-color: #F0F3F7;
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
-    }
+        body {
+            background-color: #F0F3F7;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+        }
     </style>
 </head>
 
@@ -33,13 +31,6 @@
 
     <nav class="navbar navbar-expand-lg bg-success navbar-dark w-100 fixed-top">
         <div class="container-fluid">
-            <div class="d-flex justify-content-end">
-                <a href="cart.html" class="btn btn-outline-light position-relative d-lg-none text-end">
-                    <i class="bi bi-cart4"></i>
-                    <span id="cartIcon"
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                </a>
-            </div>
             <a class="navbar-brand" href="#">
                 <img class="logo" src="assets/images/logo/logo_kuy.png" height="40">
             </a>
@@ -66,9 +57,15 @@
                         <a class="nav-link" href="index.html#contact-us">Contact Us</a>
                     </li>
                 </ul>
-                <a href="cart.html" class="btn btn-outline-light position-relative d-none d-lg-inline me-md-3">
+                <a href="cart.html" class="btn btn-outline-light position-relative me-md-3">
                     <i class="bi bi-cart4"></i>
-                    <span id="cartIcon" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    <span id="cartIcon"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                </a>
+                <a href="#" class="btn btn-outline-light position-relative me-md-3">
+                    <i class="bi bi-heart" id="wishlistIcon"></i>
+                    <span id="wishlistCount"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                 </a>
                 <a class="btn btn-outline-light" href="https://wa.me/628123456?text=Saya ingin bertanya"
                     target="_blank">Chat <i class="bi bi-whatsapp"></i></a>
@@ -132,6 +129,8 @@
 
         let webApi = "https://rikikurnia.com/prakerja/api/kopi"
         let localApi = "data.json"
+        let cart = [];
+        let wishlist = [];
 
         function getProductData(category) {
 
@@ -174,11 +173,11 @@
             productPage.innerHTML = ""
 
             selectedCategory.forEach(product => {
-                productPage.innerHTML += `<div class="col mb-4">
-                                            <dv class="card">
+                productPage.innerHTML += `<div class="col mb-4 d-flex align-items-stretch">
+                                            <div class="card">
                                                 <img src="${product.foto}" class="card-img-top" alt="menu ${product.nama}">
-                                                <div class="card-body">
-                                                    <h3 class="card-title">${product.nama}</h3>
+                                                <div class="card-body d-flex flex-column">
+                                                    <h5 class="card-title">${product.nama}</h5>
                                                     <div class="row my-4">
                                                         <div class="col">
                                                             ${product.size}
@@ -186,22 +185,31 @@
                                                         <div class="col">
                                                             ${product.harga}
                                                         </div>
-                                                    </div>                                         
+                                                    </div>
+                                                    <div class="d-flex mt-auto align-items-center">
                                                         <button onclick='addToCart(${JSON.stringify({
                                                             nama: product.nama,
                                                             harga: product.harga,
                                                             foto: product.foto,
                                                             hargaint: product.harga.split(".").join("") * 1,
                                                             qty: 1,
-                                                        })
-                    })' href="${product.link}" class="addToCart btn btn-success w-100"><i class="bi bi-cart4"></i> Add To Cart</button>
+                                                            })})' class="btn btn-success flex-grow-1 me-md-3 title=" Add to cart">
+                                                            <i class="bi bi-cart4"></i> Add
+                                                        </button>
+                                                        <button onclick='toggleWishlist(this, ${JSON.stringify({
+                                                            nama: product.nama,
+                                                            harga: product.harga,
+                                                            foto: product.foto,
+                                                            hargaint: product.harga.split(".").join("") * 1,
+                                                            })})' class="btn btn-outline-danger" title="Add to wishlist">
+                                                            <i class="bi bi-heart"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>`
-            });
-        }
-
-
+                                        </div>`;
+                                    });
+                                }
 
         $(document).ready(function () {
             getProductData("viewAll");
@@ -211,8 +219,6 @@
                 getProductData(category);
             });
         });
-
-        let cart = [];
 
         function addToCart(item) {
             cart.push(item);
@@ -235,6 +241,30 @@
             }
         }
         updateCartIcon();
+
+        function toggleWishlist(button, item) {
+            const index = wishlist.findIndex((wishlistItem) => wishlistItem.nama === item.nama);
+
+            if (index === -1) {
+                wishlist.push(item);
+                button.innerHTML = '<i class="bi bi-heart-fill"></i>';
+                button.classList.add('text-danger');
+            } else {
+                wishlist.splice(index, 1);
+                button.innerHTML = '<i class="bi bi-heart"></i>';
+                button.classList.remove('text-danger');
+            }
+
+            updateWishlistIcon();
+        }
+
+        function updateWishlistIcon() {
+            let wishlistCount = document.getElementById("wishlistCount");
+            wishlistCount.textContent = wishlist.length;
+            if (wishlist.length > 0) wishlistCount.classList.remove("d-none");
+            else wishlistCount.classList.add("d-none");
+        }
+        updateWishlistIcon();
 
         /* Batas Akhir penulisan kode Javascript */
     </script>
