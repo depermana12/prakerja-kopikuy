@@ -1,65 +1,33 @@
 {
-    "arabica": [
-        {
-            "foto": "assets/images/produk/product_capuchino.jpg",
-            "nama": "Cappuccino Arabica",
-            "size": "500 Gram",
-            "harga": "200.000",
-            "link": "https://www.google.com/search?q=cappuccino+arabica&tbm=shop"
-        },
-        {
-            "foto": "assets/images/produk/product_espresso.jpg",
-            "nama": "Pahit Arabica",
-            "size": "100 Gram",
-            "harga": "100.000",
-            "link": "https://www.google.com/search?q=pahit+arabica&tbm=shop"
-        },
-        {
-            "foto": "assets/images/produk/product_latte.jpg",
-            "nama": "Latte Arabica",
-            "size": "150 Gram",
-            "harga": "150.000",
-            "link": "https://www.google.com/search?q=latte+arabica&tbm=shop"
-        }
-    ],
-    "robusta": [
-        {
-            "foto": "assets/images/produk/product_kopi_susu.jpg",
-            "nama": "Kopsus Robusta",
-            "size": "100 Gram",
-            "harga": "500.000",
-            "link": "https://www.google.com/search?q=kopi+susu+robusta&tbm=shop"
-        },
-        {
-            "foto": "assets/images/produk/product_latte.jpg",
-            "nama": "Latte Robusta",
-            "size": "150 Gram",
-            "harga": "150.000",
-            "link": "https://www.google.com/search?q=latte+robusta&tbm=shop"
-        }
-    ],
     "makanberat": [
         {
-          "foto": "assets/images/produk/naspad.jpeg",
-          "nama": "Nasi Padang",
+          "foto": "assets/images/produk/nasigoreng.jpg",
+          "nama": "Nasi Goreng Gila Seafood",
           "size": "1 porsi",
           "harga": "30.000",
           "link": "https://www.google.com/search?q=nasi+padang"
         },
         {
           "foto": "assets/images/produk/ayamgeprek.jpg",
-          "nama": "Ayam Geprek",
+          "nama": "Ayam Geprek Kriuk Seuhah",
           "size": "1 porsi",
-          "harga": "25.000",
+          "harga": "20.000",
           "link": "https://www.google.com/search?q=ayam+geprek"
         },
         {
-          "foto": "assets/images/produk/baso.png",
-          "nama": "Bakso Urat",
+          "foto": "assets/images/produk/bakso.jpg",
+          "nama": "Bakso Urat Sapi Super Wonogiri",
           "size": "1 porsi",
-          "harga": "15.000",
+          "harga": "25.000",
           "link": "https://www.google.com/search?q=bakso+urat"
-          }
+          },
+          {
+            "foto": "assets/images/produk/mieayam.jpg",
+            "nama": "Mie Ayam Bakso Wonogiri",
+            "size": "1 porsi",
+            "harga": "20.000",
+            "link": "https://www.google.com/search?q=bakso+urat"
+            }
         
       ]
 }
