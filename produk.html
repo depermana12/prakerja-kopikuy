@@ -28,6 +28,9 @@
             bottom: 0;
             width: 100%;
         }
+        .form-floating label {
+            margin-left: 10px;
+        }
     </style>
 </head>
 
@@ -108,7 +111,13 @@
                 </button>
             </div>
             <div class="row gap-2 gap-md-0 my-5">
-            <div class="form-floating col-md-4">
+                <div class="col-md-6">
+                <div class="input-group mb-3 h-100">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="bi bi-search"></i></button>
+                    <input type="text" class="form-control" placeholder="Cari di Kopikuy" id="searchInput">
+                </div>
+            </div>
+            <div class="form-floating col-md-3">
                 <select class="form-select" id="selectCategory">
                     <option selected value="viewAll">All category</option>
                     <option value="arabica">Arabica</option>
@@ -118,12 +127,14 @@
                 </select>
                 <label for="selectCategory">Choose a category</label>
             </div>
-            <div class="col-md-8">
-            <div class="input-group mb-3 h-100">
-                <input type="text" class="form-control" placeholder="Search bar is not fully functioning yet" id="searchInput">
-                <button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="bi bi-search"></i></button>
+            <div class="form-floating col-md-3">
+                <select class="form-select" id="sortPrice">
+                    <option selected disabled> - </option>
+                    <option value="cheap">Cheapest</option>
+                    <option value="expensive">Expensive</option>
+                </select>
+                <label for="sortPrice">Sort by</label>
             </div>
-        </div>
     </div>
             <div id="keywordNotFound" class="alert alert-danger mt-3 d-none">
                 <i class="bi bi-exclamation-triangle-fill"></i> Sorry, the product you looking for is not available here</div>
@@ -193,11 +204,13 @@
             } else if (category === "makanberat") {
                 console.log("makan bang")
                 $.getJSON(localApi).then(function (data) {
-                    showProducts(data.makanberat);
+                    selectedCategory = data.makanberat;
+                    showProducts(selectedCategory);
                 });
             } else {
                 $.getJSON(webApi).then(function (data) {
-                    showProducts(data[category]);
+                    selectedCategory = data[category];
+                    showProducts(selectedCategory);
                 });
             }
         }
@@ -252,32 +265,53 @@
                                 }
 
             $(document).ready(function () {
-                getProductData("viewAll");
+                    getProductData("viewAll");
 
-                $("#selectCategory").change(function () {
-                    let category = $(this).val();
-                    getProductData(category);
-                });
-
-                $("#searchButton").click(function () {
-                    let keyword = $("#searchInput").val().toLowerCase();
-                    let filteredData = selectedCategory.filter(function (product) {
-                        return product.nama.toLowerCase().includes(keyword);
+                    $("#selectCategory").change(function () {
+                        let category = $(this).val();
+                        getProductData(category);
                     });
-                    if (filteredData.length < 1) {
-                        notFound();
-                    } else {
-                        showProducts(filteredData);
-                    }
-                });
-            });
-        
-        function notFound() {
-            productPage.innerHTML = "";
-            let notFoundPage = document.getElementById("keywordNotFound");
-            notFoundPage.classList.remove("d-none");
-        }
 
+                    $("#sortPrice").change(function() {
+                        let sortPrice = $(this).val();
+
+                        selectedCategory.sort((a, b) => {
+                            if (sortPrice === "cheap") {
+                                return a.harga - b.harga;
+                            } else {
+                                return b.harga - a.harga;
+                            }
+                        });
+                        showProducts(selectedCategory);
+                    });
+
+                    $("#searchInput").keyup(function (event) {
+                        if (event.keyCode === 13) {
+                            clickSearchBtn();
+                        }
+                    });
+
+                    $("#searchButton").click(function () {
+                        clickSearchBtn();
+                    });
+
+                    function clickSearchBtn() {
+                            let keyword = $("#searchInput").val().toLowerCase();
+                            let filteredData = selectedCategory.filter(function (product) {
+                                return product.nama.toLowerCase().includes(keyword);
+                            });
+
+                            let notFoundPage = document.getElementById("keywordNotFound");
+                            notFoundPage.classList.toggle("d-none", filteredData.length > 0)
+
+                            if (filteredData.length < 1) {
+                                productPage.innerHTML = "";
+                            } else {
+                                showProducts(filteredData);
+                            }
+                        }
+                    });
+        
         function addToCart(item) {
             cart.push(item);
             updateLocalStorage();
