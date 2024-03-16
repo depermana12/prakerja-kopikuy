@@ -19,17 +19,25 @@
         body {
             background-color: #F0F3F7;
         }
+
         .card {
             border: none;
             box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
         }
+
         .footer {
             position: fixed;
             bottom: 0;
             width: 100%;
         }
+
         .form-floating label {
             margin-left: 10px;
+        }
+
+        .modal-shadow {
+            box-shadow: rgba(141, 150, 170, 0.4) 0px 1px 4px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -38,11 +46,12 @@
     <!-- Tulis Kode Bootstrap Di Bawah Sini -->
 
     <nav class="navbar navbar-expand-lg bg-success navbar-dark w-100 fixed-top">
-        <div class="container-fluid">
+        <div class="container">
             <a class="navbar-brand" href="#">
                 <h1>
                     <a href="index.html">
-                        <img class="logo" src="assets/images/logo/logo_kuy.png" alt="logo kopikuy" title="kopikuy" height="40">
+                        <img class="logo" src="assets/images/logo/logo_kuy.png" alt="logo kopikuy" title="kopikuy"
+                            height="40">
                     </a>
                 </h1>
             </a>
@@ -112,32 +121,34 @@
             </div>
             <div class="row gap-2 gap-md-0 my-5">
                 <div class="col-md-6">
-                <div class="input-group mb-3 h-100">
-                    <button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="bi bi-search"></i></button>
-                    <input type="text" class="form-control" placeholder="Cari di Kopikuy" id="searchInput">
+                    <div class="input-group mb-3 h-100">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton"><i
+                                class="bi bi-search"></i></button>
+                        <input type="text" class="form-control" placeholder="Cari di Kopikuy" id="searchInput">
+                    </div>
+                </div>
+                <div class="form-floating col-md-3">
+                    <select class="form-select" id="selectCategory">
+                        <option selected value="viewAll">All category</option>
+                        <option value="arabica">Arabica</option>
+                        <option value="robusta">Robusta</option>
+                        <option value="nonkopi">nonkopi</option>
+                        <option value="makanberat">Makanan</option>
+                    </select>
+                    <label for="selectCategory">Choose a category</label>
+                </div>
+                <div class="form-floating col-md-3">
+                    <select class="form-select" id="sortPrice">
+                        <option selected disabled> - </option>
+                        <option value="cheap">Cheapest</option>
+                        <option value="expensive">Expensive</option>
+                    </select>
+                    <label for="sortPrice">Sort by</label>
                 </div>
             </div>
-            <div class="form-floating col-md-3">
-                <select class="form-select" id="selectCategory">
-                    <option selected value="viewAll">All category</option>
-                    <option value="arabica">Arabica</option>
-                    <option value="robusta">Robusta</option>
-                    <option value="nonkopi">nonkopi</option>
-                    <option value="makanberat">Makanan</option>
-                </select>
-                <label for="selectCategory">Choose a category</label>
-            </div>
-            <div class="form-floating col-md-3">
-                <select class="form-select" id="sortPrice">
-                    <option selected disabled> - </option>
-                    <option value="cheap">Cheapest</option>
-                    <option value="expensive">Expensive</option>
-                </select>
-                <label for="sortPrice">Sort by</label>
-            </div>
-    </div>
             <div id="keywordNotFound" class="alert alert-danger mt-3 d-none">
-                <i class="bi bi-exclamation-triangle-fill"></i> Sorry, the product you looking for is not available here</div>
+                <i class="bi bi-exclamation-triangle-fill"></i> Sorry, the product you looking for is not available here
+            </div>
             <div id="productPage" class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
             </div>
         </div>
@@ -172,13 +183,31 @@
         </div>
     </footer>
 
+    <div class="modal fade" id="addToCartConfirmation" tabindex="-1" aria-labelledby="addToCartLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title fw-normal fs-5" id="addToCartLabel"><i class="bi bi-cart-check"></i>
+                        Product successfully added to cart</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row modal-shadow m-2" id="addedCard">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="cart.html" class="btn btn-success">View Cart</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Batas Akhir penulisan kode Bootstrap -->
     <script>
         /* Tulis Javascript Di bawah Sini */
 
-        let webApi = "https://rikikurnia.com/prakerja/api/kopi"
-        let localApi = "data.json"
+        const webApi = "https://rikikurnia.com/prakerja/api/kopi"
+        const localApi = "data.json"
         let cart = [];
         let wishlist = [];
         let selectedCategory = []
@@ -240,13 +269,13 @@
                                                         </div>
                                                     </div>
                                                     <div class="d-flex mt-auto align-items-center">
-                                                        <button onclick='addToCart(${JSON.stringify({
+                                                        <button onclick='addToCartModal(${JSON.stringify({
                                                             nama: product.nama,
                                                             harga: product.harga,
                                                             foto: product.foto,
                                                             hargaint: product.harga.split(".").join("") * 1,
                                                             qty: 1,
-                                                            })})' class="btn btn-success flex-grow-1 me-md-3 title=" Add to cart">
+                                                        })})' class="btn btn-success flex-grow-1 me-md-3 title=" Add to cart">
                                                             <i class="bi bi-cart4"></i> Add
                                                         </button>
                                                         <button onclick='toggleWishlist(this, ${JSON.stringify({
@@ -254,7 +283,7 @@
                                                             harga: product.harga,
                                                             foto: product.foto,
                                                             hargaint: product.harga.split(".").join("") * 1,
-                                                            })})' class="btn btn-outline-danger" title="Add to wishlist">
+                                                        })})' class="btn btn-outline-danger" title="Add to wishlist">
                                                             <i class="bi bi-heart"></i>
                                                         </button>
                                                     </div>
@@ -264,54 +293,54 @@
                                     });
                                 }
 
-            $(document).ready(function () {
-                    getProductData("viewAll");
+        $(document).ready(function () {
+            getProductData("viewAll");
 
-                    $("#selectCategory").change(function () {
-                        let category = $(this).val();
-                        getProductData(category);
-                    });
+            $("#selectCategory").change(function () {
+                let category = $(this).val();
+                getProductData(category);
+            });
 
-                    $("#sortPrice").change(function() {
-                        let sortPrice = $(this).val();
+            $("#sortPrice").change(function () {
+                let sortPrice = $(this).val();
 
-                        selectedCategory.sort((a, b) => {
-                            if (sortPrice === "cheap") {
-                                return a.harga - b.harga;
-                            } else {
-                                return b.harga - a.harga;
-                            }
-                        });
-                        showProducts(selectedCategory);
-                    });
+                selectedCategory.sort((a, b) => {
+                    if (sortPrice === "cheap") {
+                        return a.harga - b.harga;
+                    } else {
+                        return b.harga - a.harga;
+                    }
+                });
+                showProducts(selectedCategory);
+            });
 
-                    $("#searchInput").keyup(function (event) {
-                        if (event.keyCode === 13) {
-                            clickSearchBtn();
-                        }
-                    });
+            $("#searchInput").keyup(function (event) {
+                if (event.keyCode === 13) {
+                    clickSearchBtn();
+                }
+            });
 
-                    $("#searchButton").click(function () {
-                        clickSearchBtn();
-                    });
+            $("#searchButton").click(function () {
+                clickSearchBtn();
+            });
 
-                    function clickSearchBtn() {
-                            let keyword = $("#searchInput").val().toLowerCase();
-                            let filteredData = selectedCategory.filter(function (product) {
-                                return product.nama.toLowerCase().includes(keyword);
-                            });
+            function clickSearchBtn() {
+                let keyword = $("#searchInput").val().toLowerCase();
+                let filteredData = selectedCategory.filter(function (product) {
+                    return product.nama.toLowerCase().includes(keyword);
+                });
 
-                            let notFoundPage = document.getElementById("keywordNotFound");
-                            notFoundPage.classList.toggle("d-none", filteredData.length > 0)
+                const notFoundPage = document.getElementById("keywordNotFound");
+                notFoundPage.classList.toggle("d-none", filteredData.length > 0)
 
-                            if (filteredData.length < 1) {
-                                productPage.innerHTML = "";
-                            } else {
-                                showProducts(filteredData);
-                            }
-                        }
-                    });
-        
+                if (filteredData.length < 1) {
+                    productPage.innerHTML = "";
+                } else {
+                    showProducts(filteredData);
+                }
+            }
+        });
+
         function addToCart(item) {
             cart.push(item);
             updateLocalStorage();
@@ -323,9 +352,9 @@
         }
 
         function updateCartIcon() {
-            let cartIcon = document.getElementById("cartIcon");
+            const cartIcon = document.getElementById("cartIcon");
             cartIcon.classList.add("d-none");
-            let storedCart = localStorage.getItem("cart");
+            const storedCart = localStorage.getItem("cart");
             if (storedCart != null) {
                 let parsedCart = JSON.parse(storedCart);
                 cartIcon.textContent = parsedCart.length;
@@ -351,12 +380,29 @@
         }
 
         function updateWishlistIcon() {
-            let wishlistCount = document.getElementById("wishlistCount");
+            const wishlistCount = document.getElementById("wishlistCount");
             wishlistCount.textContent = wishlist.length;
             if (wishlist.length > 0) wishlistCount.classList.remove("d-none");
             else wishlistCount.classList.add("d-none");
         }
         updateWishlistIcon();
+
+        function addToCartModal(product) {
+            addToCart(product);
+            showModal(product);
+            $('#addToCartConfirmation').modal('show');
+        }
+
+        function showModal(product) {
+            const addedToCartModal = document.getElementById('addedCard');
+            const addedProduct = `<div class="col-md-3 p-2 d-flex align-items-center justify-content-center">
+                                    <img src="${product.foto}" height="90" width="90" class="img-fluid rounded" alt="${product.nama}">
+                                 </div>
+                                 <div class="col-md-9 d-flex align-items-center">
+                                    <h5>${product.nama}</h5>
+                                 </div>`;
+            addedToCartModal.innerHTML = addedProduct;
+        }
 
         /* Batas Akhir penulisan kode Javascript */
     </script>
