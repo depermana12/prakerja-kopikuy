@@ -122,9 +122,11 @@
             <div class="row gap-2 gap-md-0 my-5">
                 <div class="col-md-6">
                     <div class="input-group mb-3 h-100">
-                        <button class="btn btn-outline-secondary" type="button" id="searchButton"><i
+                        <button class="btn btn-outline-secondary border px-3" type="button" id="searchButton"><i
                                 class="bi bi-search"></i></button>
-                        <input type="text" class="form-control" placeholder="Cari di Kopikuy" id="searchInput">
+                        <input type="text" class="form-control border-start-0 border" placeholder="Cari di Kopikuy" id="searchInput">
+                        <button class="btn btn-outline-secondary bg-white border-start-0 border" type="button" id="clearSearch"><i
+                                class="bi bi-x text-dark"></i></button>
                     </div>
                 </div>
                 <div class="form-floating col-md-3">
@@ -139,7 +141,7 @@
                 </div>
                 <div class="form-floating col-md-3">
                     <select class="form-select" id="sortPrice">
-                        <option selected disabled> - </option>
+                        <option selected disabled value="default">Default</option>
                         <option value="cheap">Cheapest</option>
                         <option value="expensive">Expensive</option>
                     </select>
@@ -299,19 +301,24 @@
             $("#selectCategory").change(function () {
                 let category = $(this).val();
                 getProductData(category);
+                $("#sortPrice").val("default");
+
             });
 
             $("#sortPrice").change(function () {
                 let sortPrice = $(this).val();
-
-                selectedCategory.sort((a, b) => {
-                    if (sortPrice === "cheap") {
-                        return a.harga - b.harga;
-                    } else {
-                        return b.harga - a.harga;
-                    }
+                let keyword = $("#searchInput").val().toLowerCase();
+                let filteredData = selectedCategory.filter(function (product) {
+                    return product.nama.toLowerCase().includes(keyword);
                 });
-                showProducts(selectedCategory);
+
+                if (sortPrice === "cheap") {
+                    filteredData.sort((a, b) => a.harga - b.harga);
+                } else {
+                    filteredData.sort((a, b) => b.harga - a.harga);
+                }
+
+                showProducts(filteredData);
             });
 
             $("#searchInput").keyup(function (event) {
@@ -319,12 +326,19 @@
                     clickSearchBtn();
                 }
             });
-
+            
             $("#searchButton").click(function () {
                 clickSearchBtn();
             });
 
+            $("#clearSearch").click(function () {
+                $("#searchInput").val("");
+                $("#keywordNotFound").addClass("d-none");
+                getProductData($("#selectCategory").val());
+            });
+            
             function clickSearchBtn() {
+                $("#sortPrice").val("default");
                 let keyword = $("#searchInput").val().toLowerCase();
                 let filteredData = selectedCategory.filter(function (product) {
                     return product.nama.toLowerCase().includes(keyword);
@@ -399,7 +413,7 @@
                                     <img src="${product.foto}" height="90" width="90" class="img-fluid rounded" alt="${product.nama}">
                                  </div>
                                  <div class="col-md-9 d-flex align-items-center">
-                                    <h5>${product.nama}</h5>
+                                    <h5 class="text-md-start text-center">${product.nama}</h5>
                                  </div>`;
             addedToCartModal.innerHTML = addedProduct;
         }
