@@ -52,6 +52,12 @@
             bottom: 0;
             width: 100%;
         }
+
+        .span-right {
+            display: block;
+            text-align: right;
+        }
+
         @media (max-width:768px) {
             .carts {
                 margin: 0 10px 0 10px;
@@ -176,12 +182,82 @@
         </div>
     </footer>
 
+    <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal with Tabs</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="navInformationTab" data-bs-toggle="tab"
+                                data-bs-target="#information" type="button" role="tab" aria-controls="nav-information"
+                                aria-selected="true">1. Information</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="navSummaryTab" data-bs-toggle="tab" data-bs-target="#summary"
+                                type="button" role="tab" aria-controls="summary-information" aria-selected="true">2.
+                                Summary</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="navPaymentTab" data-bs-toggle="tab" data-bs-target="#payment"
+                                type="button" role="tab" aria-controls="payment-information" aria-selected="true">3.
+                                Payment</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="information" role="tabpanel"
+                            aria-labelledby="navInformationTab" tabindex="0"><br>
+                            <h4 class="fs-5 py-3">Ordered product</h4>
+                            <div class="cart-content" id="checkoutCartModal">
+                            </div>
+                            <hr>
+                            <div id="couponCheckout" class="container">
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-3 d-flex align-items-center">
+                                    <span>Total</span>
+                                </div>
+                                <div class="col-3">
+                                    <span class="fs-4 fw-bold span-right" id="priceCheckout">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="navSummaryTab"
+                            tabindex="0"><br>
+                            <h3>Summary Tab</h3>
+                            <p>This is the Summary tab content.</p>
+                        </div>
+                        <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="navPaymentTab"
+                            tabindex="0"><br>
+                            <h3>Payment Tab</h3>
+                            <p>This is the Payment tab content.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
 
         let temporaryCart = [];
         let totalPrice = 0;
         let couponApplied = false;
         let originalPrice = 0;
+        const biayaLayanan = 1000;
+
+        // Arrow functions with const only hoisted the variable declarations, not the wwhole function. Regular function does.
+        // so it must be declared above, before invoke it
+        const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        const calculateTotalPrice = (hargaProduk) => totalPrice += hargaProduk;
 
         function updateCartLocalStorage() {
             let cartData = localStorage.getItem("cart");
@@ -201,9 +277,6 @@
 
         updateCartLocalStorage();
 
-        function calculateTotalPrice(hargaProduk) {
-            totalPrice += hargaProduk;
-        }
 
         function updateTemporaryCart(product) {
             let indexItems = temporaryCart.findIndex((productTMP) => {
@@ -219,6 +292,7 @@
                 temporaryCart.push(product);
             }
         }
+        
 
         function updateCartDisplay() {
             if (temporaryCart.length < 1) {
@@ -243,8 +317,10 @@
                 let couponInfo = document.getElementById("couponDetails");
                 couponInfo.style.display = "none";
             } else {
+
                 let template_list = ``;
                 temporaryCart.forEach((product, index) => {
+
                     template_list += `<div class="cart-content">
                                         <div class="row">
                                             <div class="col-md-2 text-center">
@@ -269,7 +345,6 @@
                                     </div>`;
                 });
                 cartContent.innerHTML = template_list;
-                // hehe
                 pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
             }
         }
@@ -278,6 +353,9 @@
             temporaryCart[index].qty = newValue;
             recalculateTotalPrice();
             updateCartDisplay();
+
+            const quantityCheckout = document.getElementById("qtyCheckuot");
+            quantityCheckout.textContent = `${newValue} x Rp${formatNumber(temporaryCart[index].hargaint)}`;
         }
 
         function recalculateTotalPrice() {
@@ -318,24 +396,15 @@
             updateCartDisplay();
         }
 
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-
         function checkCoupon() {
-            if (couponApplied) {
-                alert("Coupon has already been applied");
-                return;
-            }
-
-            redeemCoupon();
+            couponApplied ? alert("Coupon has already been applied") : redeemCoupon();
         }
 
         function redeemCoupon() {
 
             let couponCode = document.getElementById("coupon").value.trim();
             let couponInfo = document.getElementById("couponDetails");
+            let couponCheckoutPage = document.getElementById("couponCheckout");
 
             if (couponCode === "PRAKERJA") {
                 if (temporaryCart.length < 1) {
@@ -344,9 +413,50 @@
                 }
                 originalPrice = totalPrice;
                 totalPrice *= 0.5;
+                discountPrice = originalPrice - totalPrice
                 couponApplied = true;
+
                 couponInfo.innerHTML = `Original Price: Rp ${formatNumber(originalPrice)}<br>Discounted Price: Rp ${formatNumber(totalPrice)}<br>Coupon Applied: <span class="badge bg-secondary">${couponCode}</span> <button onclick="removeDiscount()" class="btn btn-white me-2"><i class="bi bi-trash"></i></button>`;
                 couponInfo.style.display = "block";
+
+                couponCheckoutPage.innerHTML = `
+                <div class="row justify-content-end">
+                    
+                    <div class="col-3">
+                        <span>Subtotal: </span>
+                    </div>
+                    <div class="col-3">
+                        <span class="span-right original-price">Rp${formatNumber(originalPrice)}</span>      
+                    </div>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        <span>Biaya Layanan <a tabindex="0" class="popover-dismiss" data-bs-toggle="popover"  role="button" data-bs-trigger="focus" data-bs-content="Biaya layanan Rp${formatNumber(biayaLayanan)} diterapkan untuk terus memberikan pelayanan terbaik"><i class="bi bi-question-circle"></i></a> </span>
+                    </div>
+                    <div class="col-3">
+                        <span class="span-right biaya-layanan">Rp${formatNumber(biayaLayanan)}</span>
+                    </div>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        <span>Potongan diskon: </span>
+                    </div>
+                    <div class="col-3">
+                        <span class="span-right discounted-price">Rp -${formatNumber(discountPrice)}</span>
+                    </div>
+                </div>
+                
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        <span>Voucher:</span>
+                    </div>
+                    <div class="col-3">
+                        <span class="span-right coupon">${couponCode}</span>
+                    </div>
+                </div>`;
+                // couponCheckoutPage.style.display = "block";
 
                 updateCartDisplay();
             } else {
@@ -362,9 +472,36 @@
             couponInfo.style.display = "none";
         }
 
+        function generateCartTemplate(products) {
+            let templateList = ``;
+            products.forEach((product, index) => {
+                templateList += `<div class="row my-2 py-2">
+                                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                        <img src="${product.foto}"  class="img-fluid rounded" height="60" width="60" />
+                                    </div>
+                                    <div class="col-md-10 d-flex justify-content-between">
+                                        <h5 class="fw-normal text-md-start text-center mt-3 mt-md-0">${product.nama}</h5>
+                                        <span id="qtyCheckuot" class="fw-semibold">${product.qty} x Rp${formatNumber(product.hargaint)}</span>
+                                    </div>
+                                </div>`;
+            });
+            return templateList;
+        }
+
+
         document.getElementById('checkoutButton').addEventListener('click', function () {
-            alert("Sorry, checkout page not developed yet! Hehehe");
+            $('#checkoutModal').modal('show');
+
+            const checkoutCartModal = document.getElementById('checkoutCartModal');
+            checkoutCartModal.innerHTML = generateCartTemplate(temporaryCart);
+            priceCheckout.innerHTML = "Rp " + formatNumber(totalPrice + biayaLayanan);
+
+            const popover = new bootstrap.Popover('.popover-dismiss', {
+                trigger: 'focus',
+                placement: 'bottom'
+            })
         });
+
 
     </script>
 
