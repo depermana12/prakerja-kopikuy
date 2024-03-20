@@ -124,9 +124,10 @@
                     <div class="input-group mb-3 h-100">
                         <button class="btn btn-outline-secondary border px-3" type="button" id="searchButton"><i
                                 class="bi bi-search"></i></button>
-                        <input type="text" class="form-control border-start-0 border" placeholder="Cari di Kopikuy" id="searchInput">
-                        <button class="btn btn-outline-secondary bg-white border-start-0 border" type="button" id="clearSearch"><i
-                                class="bi bi-x text-dark"></i></button>
+                        <input type="text" class="form-control border-start-0 border" placeholder="Cari di Kopikuy"
+                            id="searchInput">
+                        <button class="btn btn-outline-secondary bg-white border-start-0 border" type="button"
+                            id="clearSearch"><i class="bi bi-x text-dark"></i></button>
                     </div>
                 </div>
                 <div class="form-floating col-md-3">
@@ -185,7 +186,8 @@
         </div>
     </footer>
 
-    <div class="modal fade" id="addToCartConfirmation" tabindex="-1" aria-labelledby="addToCartLabel" aria-hidden="true">
+    <div class="modal fade" id="addToCartConfirmation" tabindex="-1" aria-labelledby="addToCartLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -272,97 +274,103 @@
                                                     </div>
                                                     <div class="d-flex mt-auto align-items-center">
                                                         <button onclick='addToCartModal(${JSON.stringify({
-                                                            nama: product.nama,
-                                                            harga: product.harga,
-                                                            foto: product.foto,
-                                                            hargaint: product.harga.split(".").join("") * 1,
-                                                            qty: 1,
-                                                        })})' class="btn btn-success flex-grow-1 me-md-3 title=" Add to cart">
+                    nama: product.nama,
+                    harga: product.harga,
+                    foto: product.foto,
+                    hargaint: product.harga.split(".").join("") * 1,
+                    qty: 1,
+                })})' class="btn btn-success flex-grow-1 me-md-3 title=" Add to cart">
                                                             <i class="bi bi-cart4"></i> Add
                                                         </button>
                                                         <button onclick='toggleWishlist(this, ${JSON.stringify({
-                                                            nama: product.nama,
-                                                            harga: product.harga,
-                                                            foto: product.foto,
-                                                            hargaint: product.harga.split(".").join("") * 1,
-                                                        })})' class="btn btn-outline-danger" title="Add to wishlist">
+                    nama: product.nama,
+                    harga: product.harga,
+                    foto: product.foto,
+                    hargaint: product.harga.split(".").join("") * 1,
+                })})' class="btn btn-outline-danger" title="Add to wishlist">
                                                             <i class="bi bi-heart"></i>
                                                         </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>`;
-                                    });
-                                }
+            });
+        }
 
-        $(document).ready(function () {
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const sortPrice = document.getElementById("sortPrice");
+            const searchForm = document.getElementById("searchInput");
+            const selectCategory = document.getElementById("selectCategory");
+            const keywordNotFound = document.getElementById("keywordNotFound")
+
             getProductData("viewAll");
 
-            $("#selectCategory").change(function () {
-                let category = $(this).val();
+            selectCategory.addEventListener("change", (event) => {
+                // cannot using 'this' inside arrow function
+                // using targetr to get the element
+                const category = event.target.value;
+                console.log(category);
                 getProductData(category);
-                $("#sortPrice").val("default");
-
+                sortPrice.value = "default";
             });
 
-            $("#sortPrice").change(function () {
-                let sortPrice = $(this).val();
-                let keyword = $("#searchInput").val().toLowerCase();
-                let filteredData = selectedCategory.filter(function (product) {
+            sortPrice.addEventListener("change", (event) => {
+                const sortType = event.currentTarget.value;
+                const keyword = searchForm.value.toLowerCase();
+                const filteredData = selectedCategory.filter((product) => {
                     return product.nama.toLowerCase().includes(keyword);
                 });
 
-                if (sortPrice === "cheap") {
-                    filteredData.sort((a, b) => a.harga - b.harga);
+
+                sortProducts(filteredData, sortType)
+            });
+
+            searchForm.addEventListener("keydown", (event) => event.key === "Enter" ? searchResult() : undefined);
+            document.getElementById("searchButton").addEventListener("click", searchResult);
+            document.getElementById("clearSearch").addEventListener("click", clearSearchResult);
+
+            function sortProducts(data, sortType) {
+                if (sortType === "cheap") {
+                    data.sort((a, b) => a.harga - b.harga);
                 } else {
-                    filteredData.sort((a, b) => b.harga - a.harga);
+                    data.sort((a, b) => b.harga - a.harga);
                 }
-
-                showProducts(filteredData);
-            });
-
-            $("#searchInput").keyup(function (event) {
-                if (event.keyCode === 13) {
-                    clickSearchBtn();
-                }
-            });
-            
-            $("#searchButton").click(function () {
-                clickSearchBtn();
-            });
-
-            $("#clearSearch").click(function () {
-                $("#searchInput").val("");
-                $("#keywordNotFound").addClass("d-none");
-                getProductData($("#selectCategory").val());
-            });
-            
-            function clickSearchBtn() {
-                $("#sortPrice").val("default");
-                let keyword = $("#searchInput").val().toLowerCase();
-                let filteredData = selectedCategory.filter(function (product) {
-                    return product.nama.toLowerCase().includes(keyword);
-                });
-
-                const notFoundPage = document.getElementById("keywordNotFound");
-                notFoundPage.classList.toggle("d-none", filteredData.length > 0)
-
-                if (filteredData.length < 1) {
-                    productPage.innerHTML = "";
-                } else {
-                    showProducts(filteredData);
-                }
+                updatePreShowProducts(data);
             }
+
+            function searchResult() {
+
+                sortPrice.value = "default";
+                const keyword = searchForm.value.toLowerCase();
+                const filteredData = selectedCategory.filter((product) => product.nama.toLowerCase().includes(keyword));
+
+                keywordNotFound.classList.toggle("d-none", filteredData.length > 0)
+                updatePreShowProducts(filteredData);
+            }
+
+            function updatePreShowProducts(data) {
+                const productPage = document.getElementById("productPage");
+                data.length < 1 ? productPage.innerHTML = "" : showProducts(data);
+            }
+
+            function clearSearchResult() {
+                searchForm.value = "";
+                keywordNotFound.classList.add("d-none");
+                getProductData(selectCategory.value);
+            }
+
         });
 
         function addToCart(item) {
             cart.push(item);
-            updateLocalStorage();
+            updateLocalStorage("cart", cart);
+            updateCartIcon();
         }
 
-        function updateLocalStorage() {
-            localStorage.setItem("cart", JSON.stringify(cart));
-            updateCartIcon();
+        function updateLocalStorage(name, key) {
+            localStorage.setItem(name, JSON.stringify(key));
         }
 
         function updateCartIcon() {
