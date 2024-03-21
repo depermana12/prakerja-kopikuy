@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-icons.css">
     <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery-3.6.3.min.js"></script>
     <style>
         body {
             background-color: #F0F3F7;
@@ -186,8 +185,7 @@
         </div>
     </footer>
 
-    <div class="modal fade" id="addToCartConfirmation" tabindex="-1" aria-labelledby="addToCartLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="addToCartConfirmation" aria-labelledby="addToCartLabel">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -196,7 +194,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row modal-shadow m-2" id="addedCard">
+                    <div id="addedCard">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -216,44 +214,49 @@
         let wishlist = [];
         let selectedCategory = []
 
-        function getProductData(category) {
-
-            if (category === "viewAll") {
-                $.when($.getJSON(webApi), $.getJSON(localApi)).then(function (
-                    datawebApi,
-                    datalocalApi
-                ) {
-                    selectedCategory = [
-                        ...datawebApi[0].robusta,
-                        ...datawebApi[0].arabica,
-                        ...datawebApi[0].nonkopi,
-                        ...datalocalApi[0].makanberat,
-                    ];
-                    shuffleArray(selectedCategory);
-                    console.log(selectedCategory)
-                    showProducts(selectedCategory);
-
-                });
-            } else if (category === "makanberat") {
-                console.log("makan bang")
-                $.getJSON(localApi).then(function (data) {
-                    selectedCategory = data.makanberat;
-                    showProducts(selectedCategory);
-                });
-            } else {
-                $.getJSON(webApi).then(function (data) {
-                    selectedCategory = data[category];
-                    showProducts(selectedCategory);
-                });
-            }
-        }
-
-        function shuffleArray(arr) {
+        const shuffleArray = (arr) => {
             for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [arr[i], arr[j]] = [arr[j], arr[i]];
             }
+        };
+
+        function getProductData(category) {
+
+                if (category === "viewAll") {
+                    Promise.all([
+                        fetch(webApi).then(response => response.json()),
+                        fetch(localApi).then(response => response.json())
+                    ]).then(([datawebApi, datalocalApi]) => {
+                        console.log("datawebApi: ", datawebApi);
+                        console.log("datalocalApi: ", datalocalApi);
+                        selectedCategory = [
+                            ...datawebApi.robusta,
+                            ...datawebApi.arabica,
+                            ...datawebApi.nonkopi,
+                            ...datalocalApi.makanberat,
+                        ];
+                        shuffleArray(selectedCategory);
+                        showProducts(selectedCategory);
+                    }).catch(error => console.error("Error fetching api: ", error));
+                } else if (category === "makanberat") {
+                    fetch(localApi)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("fetched data: ", data);
+                        selectedCategory = data.makanberat;
+                        showProducts(selectedCategory);
+                    }).catch(error => console.error("Error fetching api: ", error));
+                } else {
+                    fetch(webApi)
+                    .then(response => response.json())
+                    .then(data => {
+                        selectedCategory = data[category];
+                        showProducts(selectedCategory);
+                    }).catch(error => console.error('Error fetching api', error));
+                }
         }
+
 
         function showProducts(selectedCategory) {
             productPage.innerHTML = ""
@@ -369,9 +372,8 @@
             updateCartIcon();
         }
 
-        function updateLocalStorage(name, key) {
-            localStorage.setItem(name, JSON.stringify(key));
-        }
+        const updateLocalStorage = (name, key) => localStorage.setItem(name, JSON.stringify(key));
+
 
         function updateCartIcon() {
             const cartIcon = document.getElementById("cartIcon");
@@ -412,18 +414,53 @@
         function addToCartModal(product) {
             addToCart(product);
             showModal(product);
-            $('#addToCartConfirmation').modal('show');
+            const modal = new bootstrap.Modal(document.getElementById('addToCartConfirmation'));
+            modal.show();
         }
 
         function showModal(product) {
-            const addedToCartModal = document.getElementById('addedCard');
-            const addedProduct = `<div class="col-md-3 p-2 d-flex align-items-center justify-content-center">
-                                    <img src="${product.foto}" height="90" width="90" class="img-fluid rounded" alt="${product.nama}">
-                                 </div>
-                                 <div class="col-md-9 d-flex align-items-center">
-                                    <h5 class="text-md-start text-center">${product.nama}</h5>
-                                 </div>`;
-            addedToCartModal.innerHTML = addedProduct;
+            
+            const modalContent = document.getElementById("addedCard");
+            modalContent.innerHTML = "";
+
+            // created using createElement() other than innerHTML template literal. Learning purposes
+
+            // create outer div class row
+            const parentDiv = document.createElement("div");
+            parentDiv.classList.add("row", "modal-shadow", "m-2" );
+
+            // create div class col-md-3
+            const div = document.createElement("div");
+            div.classList.add("col-md-3", "p-2", "d-flex", "align-items-center", "justify-content-center");
+            
+            // create image element
+            const image = document.createElement("img");
+            image.setAttribute("src", product.foto);
+            image.setAttribute("height", "90");
+            image.setAttribute("width", "90");
+            image.setAttribute("alt", "menu " + product.nama)
+            image.classList.add("img-fluid", "rounded");
+
+            // create another div class col-md-9
+            const div2 = document.createElement("div");
+            div2.classList.add("col-md-9", "d-flex", "align-items-center");
+
+            // create heading element
+            const heading5 = document.createElement("h5");
+            heading5.classList.add("text-md-start", "text-center");
+            heading5.textContent = product.nama;
+            
+            // push image into div class col-md-3
+            div.appendChild(image)
+            // push heading h5 into div class col-md-9
+            div2.appendChild(heading5)
+            // push div class col-md-3 into outer div class row
+            parentDiv.appendChild(div)
+            // push div class col-md-9 into outer div class row
+            parentDiv.appendChild(div2)
+            // push complete row into modalContent page
+            modalContent.appendChild(parentDiv)
+
         }
 
         /* Batas Akhir penulisan kode Javascript */
