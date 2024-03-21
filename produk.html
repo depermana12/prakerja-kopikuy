@@ -237,7 +237,7 @@
                         ...datalocalApi.makanberat,
                     ];
                     shuffleArray(selectedCategory);
-                    showProducts(selectedCategory);
+                    displayProducts(selectedCategory);
                 }).catch(error => console.error("Error fetching api: ", error));
             } else if (category === "makanberat") {
                 fetch(localApi)
@@ -245,20 +245,20 @@
                     .then(data => {
                         console.log("fetched data: ", data);
                         selectedCategory = data.makanberat;
-                        showProducts(selectedCategory);
+                        displayProducts(selectedCategory);
                     }).catch(error => console.error("Error fetching api: ", error));
             } else {
                 fetch(webApi)
                     .then(response => response.json())
                     .then(data => {
                         selectedCategory = data[category];
-                        showProducts(selectedCategory);
+                        displayProducts(selectedCategory);
                     }).catch(error => console.error('Error fetching api', error));
             }
         }
 
 
-        function showProducts(selectedCategory) {
+        function displayProducts(selectedCategory) {
             productPage.innerHTML = ""
 
             selectedCategory.forEach(product => {
@@ -276,7 +276,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="d-flex mt-auto align-items-center">
-                                                        <button onclick='addToCartModal(${JSON.stringify({
+                                                        <button onclick='addToCartHandler(${JSON.stringify({
                     nama: product.nama,
                     harga: product.harga,
                     foto: product.foto,
@@ -287,9 +287,6 @@
                                                         </button>
                                                         <button onclick='toggleWishlist(this, ${JSON.stringify({
                     nama: product.nama,
-                    harga: product.harga,
-                    foto: product.foto,
-                    hargaint: product.harga.split(".").join("") * 1,
                 })})' class="btn btn-outline-danger" title="Add to wishlist">
                                                             <i class="bi bi-heart"></i>
                                                         </button>
@@ -299,17 +296,91 @@
                                         </div>`;
             });
         }
+        
+        const storeToLocalStorage = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+        
+        function updateIconNavbar(iconElementId, data, toggleIcon) {
+            const iconElement = document.getElementById(iconElementId);
+            // if data is not an array then parse the localStorage
+            // ?? is nullish coalescing operator, return left value if not null, otherwise return right value
+            const iconData = Array.isArray(data) ? data.length : JSON.parse(localStorage.getItem(data) ?? "[]").length;
+            
+            iconElement.textContent = iconData;
+            iconElement.classList.toggle("d-none", toggleIcon(iconData));
+        }
+        
+        updateIconNavbar("cartIcon", "cart", (iconDataLen) => iconDataLen === 0);
+        updateIconNavbar("wishlistCount", wishlist, (iconDataLen) => iconDataLen === 0);
+        
+        function addToCart(item) {
+            cart.push(item);
+            storeToLocalStorage("cart", cart);
+            updateIconNavbar("cartIcon", "cart", (iconDataLen) => iconDataLen === 0);
+        }
+        
+        const displayModal = (product) => {
+            const modalContent = document.getElementById("addedCard");
+            modalContent.innerHTML = "";
+            
+            // created using createElement() for learning purposes
+            const parentDiv = document.createElement("div");
+            parentDiv.classList.add("row", "modal-shadow", "m-2");
+            
+            const div = document.createElement("div");
+            div.classList.add("col-md-3", "p-2", "d-flex", "align-items-center", "justify-content-center");
+            
+            const image = document.createElement("img");
+            image.setAttribute("src", product.foto);
+            image.setAttribute("height", "90");
+            image.setAttribute("width", "90");
+            image.setAttribute("alt", "menu " + product.nama)
+            image.classList.add("img-fluid", "rounded");
+            
+            const div2 = document.createElement("div");
+            div2.classList.add("col-md-9", "d-flex", "align-items-center");
+            
+            const heading5 = document.createElement("h5");
+            heading5.classList.add("text-md-start", "text-center");
+            heading5.textContent = product.nama;
+            
+            div.appendChild(image)
+            div2.appendChild(heading5)
+            parentDiv.appendChild(div)
+            parentDiv.appendChild(div2)
+            modalContent.appendChild(parentDiv)
+        }
 
+        const addToCartHandler = (product) => {
+            addToCart(product);
+            displayModal(product);
+            const modal = new bootstrap.Modal(document.getElementById('addToCartConfirmation'));
+            modal.show();
+        }
+        
+        function toggleWishlist(button, item) {
+            const index = wishlist.findIndex((wishlistItem) => wishlistItem.nama === item.nama);
+            
+            if (index === -1) {
+                wishlist.push(item);
+                button.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            } else {
+                wishlist.splice(index, 1);
+                button.innerHTML = '<i class="bi bi-heart"></i>';
+            }
+
+            button.classList.toggle("text-danger", index === -1);
+            updateIconNavbar("wishlistCount", wishlist, (iconDataLen) => iconDataLen === 0);
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
-
+        
             const sortPrice = document.getElementById("sortPrice");
             const searchForm = document.getElementById("searchInput");
             const selectCategory = document.getElementById("selectCategory");
             const keywordNotFound = document.getElementById("keywordNotFound")
-
+        
             getProductData("viewAll");
-
+        
             selectCategory.addEventListener("change", (event) => {
                 // cannot using 'this' inside arrow function
                 // using targetr to get the element
@@ -318,22 +389,20 @@
                 getProductData(category);
                 sortPrice.value = "default";
             });
-
+        
             sortPrice.addEventListener("change", (event) => {
                 const sortType = event.currentTarget.value;
                 const keyword = searchForm.value.toLowerCase();
                 const filteredData = selectedCategory.filter((product) => {
                     return product.nama.toLowerCase().includes(keyword);
                 });
-
-
                 sortProducts(filteredData, sortType)
             });
-
+        
             searchForm.addEventListener("keydown", (event) => event.key === "Enter" ? searchResult() : undefined);
             document.getElementById("searchButton").addEventListener("click", searchResult);
             document.getElementById("clearSearch").addEventListener("click", clearSearchResult);
-
+        
             function sortProducts(data, sortType) {
                 if (sortType === "cheap") {
                     data.sort((a, b) => a.harga - b.harga);
@@ -342,122 +411,34 @@
                 }
                 checkProductLength(data);
             }
-
+        
             function searchResult() {
-
+        
                 sortPrice.value = "default";
                 const keyword = searchForm.value.toLowerCase();
                 const filteredData = selectedCategory.filter((product) => product.nama.toLowerCase().includes(keyword));
-
+        
                 keywordNotFound.classList.toggle("d-none", filteredData.length > 0)
                 checkProductLength(filteredData);
             }
-
+        
             function checkProductLength(data) {
                 const productPage = document.getElementById("productPage");
-                data.length < 1 ? productPage.innerHTML = "" : showProducts(data);
+                data.length < 1 ? productPage.innerHTML = "" : displayProducts(data);
             }
-
+        
             function clearSearchResult() {
-                searchForm.value = "";
-                keywordNotFound.classList.add("d-none");
-                getProductData(selectCategory.value);
+                if (searchForm.value.trim() !== "") {
+                    searchForm.value = "";
+                    keywordNotFound.classList.add("d-none");
+                    getProductData(selectCategory.value);
+                }
             }
 
         });
 
-        function addToCart(item) {
-            cart.push(item);
-            updateLocalStorage("cart", cart);
-            updateIcon("cartIcon", "cart", (iconDataLen) => iconDataLen === 0);
-        }
-
-        const updateLocalStorage = (name, key) => localStorage.setItem(name, JSON.stringify(key));
-
-
-        function updateIcon(iconElementId, data, toggleIcon) {
-            const iconElement = document.getElementById(iconElementId);
-            const iconData = Array.isArray(data) ? data.length : JSON.parse(localStorage.getItem(data) ?? "[]").length;
-
-            iconElement.textContent = iconData;
-            iconElement.classList.toggle("d-none", toggleIcon(iconData));
-        }
-
-        updateIcon("cartIcon", "cart", (iconDataLen) => iconDataLen === 0);
-        updateIcon("wishlistCount", wishlist, (iconDataLen) => iconDataLen === 0);
-
-
-        function toggleWishlist(button, item) {
-            const index = wishlist.findIndex((wishlistItem) => wishlistItem.nama === item.nama);
-
-            if (index === -1) {
-                wishlist.push(item);
-                button.innerHTML = '<i class="bi bi-heart-fill"></i>';
-                button.classList.add('text-danger');
-            } else {
-                wishlist.splice(index, 1);
-                button.innerHTML = '<i class="bi bi-heart"></i>';
-                button.classList.remove('text-danger');
-            }
-
-            updateIcon("wishlistCount", wishlist, (iconDataLen) => iconDataLen === 0);
-        }
-
-
-        const addToCartModal = (product) => {
-            addToCart(product);
-            showModal(product);
-            const modal = new bootstrap.Modal(document.getElementById('addToCartConfirmation'));
-            modal.show();
-        }
-
-        const showModal = (product) => {
-
-            const modalContent = document.getElementById("addedCard");
-            modalContent.innerHTML = "";
-
-            // created using createElement() other than innerHTML template literal. Learning purposes
-
-            // create outer div class row
-            const parentDiv = document.createElement("div");
-            parentDiv.classList.add("row", "modal-shadow", "m-2");
-
-            // create div class col-md-3
-            const div = document.createElement("div");
-            div.classList.add("col-md-3", "p-2", "d-flex", "align-items-center", "justify-content-center");
-
-            // create image element
-            const image = document.createElement("img");
-            image.setAttribute("src", product.foto);
-            image.setAttribute("height", "90");
-            image.setAttribute("width", "90");
-            image.setAttribute("alt", "menu " + product.nama)
-            image.classList.add("img-fluid", "rounded");
-
-            // create another div class col-md-9
-            const div2 = document.createElement("div");
-            div2.classList.add("col-md-9", "d-flex", "align-items-center");
-
-            // create heading element
-            const heading5 = document.createElement("h5");
-            heading5.classList.add("text-md-start", "text-center");
-            heading5.textContent = product.nama;
-
-            // push image into div class col-md-3
-            div.appendChild(image)
-            // push heading h5 into div class col-md-9
-            div2.appendChild(heading5)
-            // push div class col-md-3 into outer div class row
-            parentDiv.appendChild(div)
-            // push div class col-md-9 into outer div class row
-            parentDiv.appendChild(div2)
-            // push complete row into modalContent page
-            modalContent.appendChild(parentDiv)
-
-        }
-
         /* Batas Akhir penulisan kode Javascript */
-    </script>
+        </script>
 </body>
 
 </html>
