@@ -223,38 +223,38 @@
 
         function getProductData(category) {
 
-                if (category === "viewAll") {
-                    Promise.all([
-                        fetch(webApi).then(response => response.json()),
-                        fetch(localApi).then(response => response.json())
-                    ]).then(([datawebApi, datalocalApi]) => {
-                        console.log("datawebApi: ", datawebApi);
-                        console.log("datalocalApi: ", datalocalApi);
-                        selectedCategory = [
-                            ...datawebApi.robusta,
-                            ...datawebApi.arabica,
-                            ...datawebApi.nonkopi,
-                            ...datalocalApi.makanberat,
-                        ];
-                        shuffleArray(selectedCategory);
-                        showProducts(selectedCategory);
-                    }).catch(error => console.error("Error fetching api: ", error));
-                } else if (category === "makanberat") {
-                    fetch(localApi)
+            if (category === "viewAll") {
+                Promise.all([
+                    fetch(webApi).then(response => response.json()),
+                    fetch(localApi).then(response => response.json())
+                ]).then(([datawebApi, datalocalApi]) => {
+                    console.log("datawebApi: ", datawebApi);
+                    console.log("datalocalApi: ", datalocalApi);
+                    selectedCategory = [
+                        ...datawebApi.robusta,
+                        ...datawebApi.arabica,
+                        ...datawebApi.nonkopi,
+                        ...datalocalApi.makanberat,
+                    ];
+                    shuffleArray(selectedCategory);
+                    showProducts(selectedCategory);
+                }).catch(error => console.error("Error fetching api: ", error));
+            } else if (category === "makanberat") {
+                fetch(localApi)
                     .then(response => response.json())
                     .then(data => {
                         console.log("fetched data: ", data);
                         selectedCategory = data.makanberat;
                         showProducts(selectedCategory);
                     }).catch(error => console.error("Error fetching api: ", error));
-                } else {
-                    fetch(webApi)
+            } else {
+                fetch(webApi)
                     .then(response => response.json())
                     .then(data => {
                         selectedCategory = data[category];
                         showProducts(selectedCategory);
                     }).catch(error => console.error('Error fetching api', error));
-                }
+            }
         }
 
 
@@ -280,7 +280,7 @@
                     nama: product.nama,
                     harga: product.harga,
                     foto: product.foto,
-                    hargaint: product.harga.split(".").join("") * 1,
+                    hargaint: product.harga.replace(".", "") * 1,
                     qty: 1,
                 })})' class="btn btn-success flex-grow-1 me-md-3 title=" Add to cart">
                                                             <i class="bi bi-cart4"></i> Add
@@ -340,7 +340,7 @@
                 } else {
                     data.sort((a, b) => b.harga - a.harga);
                 }
-                updatePreShowProducts(data);
+                checkProductLength(data);
             }
 
             function searchResult() {
@@ -350,10 +350,10 @@
                 const filteredData = selectedCategory.filter((product) => product.nama.toLowerCase().includes(keyword));
 
                 keywordNotFound.classList.toggle("d-none", filteredData.length > 0)
-                updatePreShowProducts(filteredData);
+                checkProductLength(filteredData);
             }
 
-            function updatePreShowProducts(data) {
+            function checkProductLength(data) {
                 const productPage = document.getElementById("productPage");
                 data.length < 1 ? productPage.innerHTML = "" : showProducts(data);
             }
@@ -369,23 +369,23 @@
         function addToCart(item) {
             cart.push(item);
             updateLocalStorage("cart", cart);
-            updateCartIcon();
+            updateIcon("cartIcon", "cart", (iconDataLen) => iconDataLen === 0);
         }
 
         const updateLocalStorage = (name, key) => localStorage.setItem(name, JSON.stringify(key));
 
 
-        function updateCartIcon() {
-            const cartIcon = document.getElementById("cartIcon");
-            cartIcon.classList.add("d-none");
-            const storedCart = localStorage.getItem("cart");
-            if (storedCart != null) {
-                let parsedCart = JSON.parse(storedCart);
-                cartIcon.textContent = parsedCart.length;
-                if (parsedCart.length > 0) cartIcon.classList.remove("d-none");
-            }
+        function updateIcon(iconElementId, data, toggleIcon) {
+            const iconElement = document.getElementById(iconElementId);
+            const iconData = Array.isArray(data) ? data.length : JSON.parse(localStorage.getItem(data) ?? "[]").length;
+
+            iconElement.textContent = iconData;
+            iconElement.classList.toggle("d-none", toggleIcon(iconData));
         }
-        updateCartIcon();
+
+        updateIcon("cartIcon", "cart", (iconDataLen) => iconDataLen === 0);
+        updateIcon("wishlistCount", wishlist, (iconDataLen) => iconDataLen === 0);
+
 
         function toggleWishlist(button, item) {
             const index = wishlist.findIndex((wishlistItem) => wishlistItem.nama === item.nama);
@@ -400,26 +400,19 @@
                 button.classList.remove('text-danger');
             }
 
-            updateWishlistIcon();
+            updateIcon("wishlistCount", wishlist, (iconDataLen) => iconDataLen === 0);
         }
 
-        function updateWishlistIcon() {
-            const wishlistCount = document.getElementById("wishlistCount");
-            wishlistCount.textContent = wishlist.length;
-            if (wishlist.length > 0) wishlistCount.classList.remove("d-none");
-            else wishlistCount.classList.add("d-none");
-        }
-        updateWishlistIcon();
 
-        function addToCartModal(product) {
+        const addToCartModal = (product) => {
             addToCart(product);
             showModal(product);
             const modal = new bootstrap.Modal(document.getElementById('addToCartConfirmation'));
             modal.show();
         }
 
-        function showModal(product) {
-            
+        const showModal = (product) => {
+
             const modalContent = document.getElementById("addedCard");
             modalContent.innerHTML = "";
 
@@ -427,12 +420,12 @@
 
             // create outer div class row
             const parentDiv = document.createElement("div");
-            parentDiv.classList.add("row", "modal-shadow", "m-2" );
+            parentDiv.classList.add("row", "modal-shadow", "m-2");
 
             // create div class col-md-3
             const div = document.createElement("div");
             div.classList.add("col-md-3", "p-2", "d-flex", "align-items-center", "justify-content-center");
-            
+
             // create image element
             const image = document.createElement("img");
             image.setAttribute("src", product.foto);
@@ -449,7 +442,7 @@
             const heading5 = document.createElement("h5");
             heading5.classList.add("text-md-start", "text-center");
             heading5.textContent = product.nama;
-            
+
             // push image into div class col-md-3
             div.appendChild(image)
             // push heading h5 into div class col-md-9
