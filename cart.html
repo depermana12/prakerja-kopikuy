@@ -143,8 +143,9 @@
                                 <hr>
                             </div>
                             <div class="col-md-12 pb-3">
-                                <a href="#" class="btn btn-success d-block w-100" id="checkoutButton"><i
-                                        class="fa fa-shopping-cart"></i>Checkout</a>
+                                <button type="button" class="btn btn-success d-block w-100" id="checkoutButton">
+                                    <i class="fa fa-shopping-cart"></i>Checkout
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -217,6 +218,8 @@
                             <div class="cart-content" id="checkoutCartModal">
                             </div>
                             <hr>
+                            <div id="detailsCheckout" class="container">
+                            </div>
                             <div id="couponCheckout" class="container">
                             </div>
                             <div class="row justify-content-end">
@@ -247,55 +250,40 @@
 
     <script>
 
-        let temporaryCart = [];
+        let tempCart = [];
+        let originalPrice = 0;
+
         let totalPrice = 0;
         let couponApplied = false;
-        let originalPrice = 0;
         const biayaLayanan = 1000;
 
         // Arrow functions with const only hoisted the variable declarations, not the wwhole function. Regular function does.
         // so it must be declared above, before invoke it
         const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-        const calculateTotalPrice = (hargaProduk) => totalPrice += hargaProduk;
+        function tempCartTotalPrice() {
+            totalPrice = tempCart.reduce((acc, product) => acc + (product.hargaint * product.qty), 0);}
 
-        function updateCartLocalStorage() {
-            let cartData = localStorage.getItem("cart");
 
-            if (cartData != null) {
-                let cartItems = JSON.parse(localStorage.getItem("cart"));
+        function retrieveLocalStorage() {
+            let productInCart = JSON.parse(localStorage.getItem("cart") ?? []);
 
-                cartItems.forEach((product) => {
-                    calculateTotalPrice(product.hargaint);
-                    updateTemporaryCart(product);
-
-                });
-
-                updateCartDisplay();
-            }
+            productInCart.forEach((product) => updateTempCart(product));
+            updateCartUi();
         }
 
-        updateCartLocalStorage();
+        retrieveLocalStorage();
 
+        function updateTempCart(product) {
+            let indexTempProduct = tempCart.findIndex((productTempCart) => (productTempCart.nama === product.nama));
+            indexTempProduct !== -1 ? tempCart[indexTempProduct].qty++ : tempCart.push(product);
 
-        function updateTemporaryCart(product) {
-            let indexItems = temporaryCart.findIndex((productTMP) => {
-                if (productTMP.nama === product.nama) {
-                    return true;
-                }
-                return false;
-            });
-
-            if (indexItems !== -1) {
-                temporaryCart[indexItems].qty = temporaryCart[indexItems].qty + 1;
-            } else {
-                temporaryCart.push(product);
-            }
+            console.log(tempCart);
+            tempCartTotalPrice();
         }
-        
 
-        function updateCartDisplay() {
-            if (temporaryCart.length < 1) {
+        function updateCartUi() {
+            if (tempCart.length < 1) {
                 cartContent.innerHTML = `<div class="cart-content">
                                             <div class="row align-items-center text-center">
                                                 <div class="col">
@@ -312,15 +300,14 @@
                                                 </div>
                                             </div>
                                         </div>`;
-                pricePlaceHolder.innerHTML = 0;
+                pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
                 couponApplied = false;
                 let couponInfo = document.getElementById("couponDetails");
                 couponInfo.style.display = "none";
             } else {
 
                 let template_list = ``;
-                temporaryCart.forEach((product, index) => {
-
+                tempCart.forEach((product, index) => {
                     template_list += `<div class="cart-content">
                                         <div class="row">
                                             <div class="col-md-2 text-center">
@@ -333,11 +320,11 @@
                                                         <span class="fw-bold">Rp${formatNumber(product.hargaint)}</span>
                                                     </div>
                                                     <div class="col-md-6 col-6 d-flex justify-content-end align-items-center">
-                                                        <button onclick="removeProduct(${index})" class="btn btn-white me-2">
+                                                        <button onclick="removeProductHandler(${index})" class="btn btn-white me-2">
                                                             <i class="bi bi-trash" style="font-size: 22px;"></i>
                                                         </button>
                                                         <input class="form-control" type="number" style="width: 60px;" value="${product.qty}" min="1"
-                                                            onchange="productQtyChanges(${index}, this.value)">
+                                                            onchange="updateTempCartQty(${index}, this.value)">
                                                     </div>
                                                 </div>
                                             </div>
@@ -348,120 +335,114 @@
                 pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
             }
         }
-
-        function productQtyChanges(index, newValue) {
-            temporaryCart[index].qty = newValue;
-            recalculateTotalPrice();
-            updateCartDisplay();
-
-            const quantityCheckout = document.getElementById("qtyCheckuot");
-            quantityCheckout.textContent = `${newValue} x Rp${formatNumber(temporaryCart[index].hargaint)}`;
+        
+        function updateTempCartQty(index, newValue) {
+            tempCart[index].qty = newValue;
+            tempCartTotalPrice();
+            updateCartUi();
         }
 
-        function recalculateTotalPrice() {
-            totalPrice = 0;
-            temporaryCart.forEach((product) => {
-                totalPrice += product.hargaint * product.qty;
-            });
-        }
+        function removeFromLocalStorage(productName) {
+            let productInCart = JSON.parse(localStorage.getItem("cart")) || [];
+            const productIndex = productInCart.findIndex(product => product.nama === productName);
 
-        function removeProduct(index) {
-            totalPrice = totalPrice - temporaryCart[index].hargaint;
-
-            let cartData = localStorage.getItem("cart");
-            let cartItems = JSON.parse(
-                localStorage.getItem("cart")
-            );
-            let productName = temporaryCart[index].nama;
-
-            let indexItems = cartItems.findIndex((productTMP) => {
-                if (productTMP.nama === productName) {
-                    return true;
-                }
-                return false;
-            });
-
-            if (indexItems !== -1) {
-                cartItems.splice(indexItems, 1);
-                localStorage.setItem(
-                    "cart",
-                    JSON.stringify(cartItems)
-                );
+            if (productIndex !== -1) {
+                productInCart.splice(productIndex, 1);
+                localStorage.setItem("cart", JSON.stringify(productInCart))
             }
-            if (temporaryCart[index].qty > 1) {
-                temporaryCart[index].qty = temporaryCart[index].qty - 1;
+        }
+
+        function removeFromTempCart(index) {
+            if (tempCart[index].qty > 1) {
+                tempCart[index].qty--;
             } else {
-                temporaryCart.splice(index, 1);
+                tempCart.splice(index, 1);
             }
-            updateCartDisplay();
+        }
+
+        function removeProductHandler(index) {
+            totalPrice = totalPrice - tempCart[index].hargaint;
+            removeFromLocalStorage(tempCart[index].nama);
+            removeFromTempCart(index);
+            updateCartUi();
+        }
+
+        const detailCheckout = (label, value) => {
+            const row = document.createElement("div");
+            row.classList.add("row", "justify-content-end");
+
+            const colLabel = document.createElement("div");
+            const spanLabel = document.createElement("span")
+            spanLabel.textContent = label;
+            colLabel.classList.add("col-3");
+            colLabel.appendChild(spanLabel);
+
+            const colValue = document.createElement("div");
+            const spanValue = document.createElement("span")
+            spanValue.textContent = value;
+            colValue.classList.add("col-3", "span-right");
+            colValue.appendChild(spanValue)
+
+            row.appendChild(colLabel);
+            row.appendChild(colValue);
+
+            return row;
+        }
+
+        const popoverMessage = `Biaya layanan Rp${formatNumber(biayaLayanan)} diterapkan untuk terus memberikan pelayanan terbaik`;
+
+        function createPopover(message) {
+            const popover = document.createElement("a");
+            popover.setAttribute("tabindex", "0");
+            popover.classList.add("popover-dismiss");
+            popover.setAttribute("data-bs-toggle", "popover");
+            popover.setAttribute("role", "button");
+            popover.setAttribute("data-bs-trigger", "focus");
+            popover.setAttribute("data-bs-content", message);
+
+            const icon = document.createElement("i");
+            icon.classList.add("bi", "bi-question-circle");
+            popover.appendChild(icon);
+            return popover;
         }
 
         function checkCoupon() {
             couponApplied ? alert("Coupon has already been applied") : redeemCoupon();
         }
-
+        
+        
         function redeemCoupon() {
-
-            let couponCode = document.getElementById("coupon").value.trim();
-            let couponInfo = document.getElementById("couponDetails");
             let couponCheckoutPage = document.getElementById("couponCheckout");
 
+            couponCheckoutPage.innerHTML = "";
+            couponCheckoutPage.style.display = "block";
+
+            let couponInfo = document.getElementById("couponDetails");
+            let couponCode = document.getElementById("coupon").value.trim();
+
             if (couponCode === "PRAKERJA") {
-                if (temporaryCart.length < 1) {
+                if (tempCart.length < 1) {
                     alert("Please add a product first");
                     return;
                 }
+
                 originalPrice = totalPrice;
                 totalPrice *= 0.5;
-                discountPrice = originalPrice - totalPrice
                 couponApplied = true;
 
                 couponInfo.innerHTML = `Original Price: Rp ${formatNumber(originalPrice)}<br>Discounted Price: Rp ${formatNumber(totalPrice)}<br>Coupon Applied: <span class="badge bg-secondary">${couponCode}</span> <button onclick="removeDiscount()" class="btn btn-white me-2"><i class="bi bi-trash"></i></button>`;
                 couponInfo.style.display = "block";
 
-                couponCheckoutPage.innerHTML = `
-                <div class="row justify-content-end">
-                    
-                    <div class="col-3">
-                        <span>Subtotal: </span>
-                    </div>
-                    <div class="col-3">
-                        <span class="span-right original-price">Rp${formatNumber(originalPrice)}</span>      
-                    </div>
-                </div>
+                const potonganDiskon = detailCheckout("Potongan diskon: ", "Rp-" + formatNumber(originalPrice - totalPrice));
+                const voucherKode = detailCheckout("Voucher: ", couponCode);
+                couponCheckoutPage.appendChild(potonganDiskon);
+                couponCheckoutPage.appendChild(voucherKode);
 
-                <div class="row justify-content-end">
-                    <div class="col-3">
-                        <span>Biaya Layanan <a tabindex="0" class="popover-dismiss" data-bs-toggle="popover"  role="button" data-bs-trigger="focus" data-bs-content="Biaya layanan Rp${formatNumber(biayaLayanan)} diterapkan untuk terus memberikan pelayanan terbaik"><i class="bi bi-question-circle"></i></a> </span>
-                    </div>
-                    <div class="col-3">
-                        <span class="span-right biaya-layanan">Rp${formatNumber(biayaLayanan)}</span>
-                    </div>
-                </div>
-
-                <div class="row justify-content-end">
-                    <div class="col-3">
-                        <span>Potongan diskon: </span>
-                    </div>
-                    <div class="col-3">
-                        <span class="span-right discounted-price">Rp -${formatNumber(discountPrice)}</span>
-                    </div>
-                </div>
-                
-                <div class="row justify-content-end">
-                    <div class="col-3">
-                        <span>Voucher:</span>
-                    </div>
-                    <div class="col-3">
-                        <span class="span-right coupon">${couponCode}</span>
-                    </div>
-                </div>`;
-                // couponCheckoutPage.style.display = "block";
-
-                updateCartDisplay();
+                updateCartUi();
             } else {
                 alert("Invalid coupon code");
             }
+
         }
 
         function removeDiscount() {
@@ -470,38 +451,82 @@
             couponApplied = false;
             let couponInfo = document.getElementById("couponDetails");
             couponInfo.style.display = "none";
+
+            const couponDetailsInfo = document.getElementById("couponCheckout");
+            couponDetailsInfo.style.display = "none";
         }
 
-        function generateCartTemplate(products) {
-            let templateList = ``;
-            products.forEach((product, index) => {
-                templateList += `<div class="row my-2 py-2">
-                                    <div class="col-md-2 d-flex align-items-center justify-content-center">
-                                        <img src="${product.foto}"  class="img-fluid rounded" height="60" width="60" />
-                                    </div>
-                                    <div class="col-md-10 d-flex justify-content-between">
-                                        <h5 class="fw-normal text-md-start text-center mt-3 mt-md-0">${product.nama}</h5>
-                                        <span id="qtyCheckuot" class="fw-semibold">${product.qty} x Rp${formatNumber(product.hargaint)}</span>
-                                    </div>
-                                </div>`;
-            });
-            return templateList;
+        const createProductCheckout = (product) => {
+            const row = document.createElement("div");
+            row.classList.add("row", "my-2", "py-2");
+
+            const colImage = document.createElement("div");
+            colImage.classList.add("col-md-2", "d-flex", "align-items-center", "justify-content-center");
+
+            const image = document.createElement("img");
+            image.setAttribute("src", product.foto);
+            image.setAttribute("height", "60");
+            image.setAttribute("width", "60");
+            image.classList.add("img-fluid", "rounded");
+
+            const colDetails = document.createElement("div");
+            colDetails.classList.add("col-md-10", "d-flex", "justify-content-between");
+
+            const productTitle = document.createElement("h5");
+            productTitle.classList.add("fw-normal", "text-md-start", "text-center", "mt-3", "mt-md-0")
+            productTitle.textContent = product.nama;
+
+            const productQty = document.createElement("span");
+            productQty.classList.add("fw-semibold");
+            productQty.textContent = `${product.qty} x Rp${formatNumber(product.hargaint)}`;
+
+            colImage.appendChild(image);
+            colDetails.appendChild(productTitle);
+            colDetails.appendChild(productQty);
+            row.appendChild(colImage);
+            row.appendChild(colDetails);
+
+            return row;
+
         }
 
 
-        document.getElementById('checkoutButton').addEventListener('click', function () {
-            $('#checkoutModal').modal('show');
-
+        function orderedProduct(products) {
             const checkoutCartModal = document.getElementById('checkoutCartModal');
-            checkoutCartModal.innerHTML = generateCartTemplate(temporaryCart);
-            priceCheckout.innerHTML = "Rp " + formatNumber(totalPrice + biayaLayanan);
+            checkoutCartModal.innerHTML = "";
+            products.forEach((product, index) => {
+                const item = createProductCheckout(product);
+                checkoutCartModal.appendChild(item)
+            });
+        }
 
-            const popover = new bootstrap.Popover('.popover-dismiss', {
+        const checkoutHandler = () => {
+            orderedProduct(tempCart)
+            const modal = new bootstrap.Modal(document.getElementById("checkoutModal"));
+            modal.show();
+            
+            let detailsCheckout = document.getElementById("detailsCheckout");
+            detailsCheckout.innerHTML = "";
+
+  
+            
+            let subTotal = detailCheckout("Subtotal: ", "Rp" + formatNumber(originalPrice));
+            let biayaLayananCheckout = detailCheckout("Biaya layanan: ", "Rp" + formatNumber(biayaLayanan));
+            let biayaLayananPopover = biayaLayananCheckout.querySelector(".col-3 span");
+            biayaLayananPopover.appendChild(createPopover(popoverMessage));
+            
+            detailsCheckout.appendChild(subTotal);
+            detailsCheckout.appendChild(biayaLayananCheckout);
+            
+            priceCheckout.innerHTML = "Rp " + formatNumber(totalPrice + biayaLayanan);
+            
+            const popover = new bootstrap.Popover(document.querySelector('.popover-dismiss'), {
                 trigger: 'focus',
                 placement: 'bottom'
             })
-        });
+        }
 
+        document.getElementById("checkoutButton").addEventListener("click", checkoutHandler)
 
     </script>
 
