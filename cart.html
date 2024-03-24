@@ -13,31 +13,25 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-icons.css" />
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery-3.6.3.min.js"></script>
 
     <style>
         body {
             background-color: #F0F3F7;
         }
-
         h3 {
             font-size: 16px;
         }
-
         .cart-container {
             clear: both;
             margin-bottom: 25px;
             margin-top: 0;
             padding: 0;
         }
-
         .cart-title {
             background-color: #ffffff;
             padding: 14px 15px 7px;
             border-radius: 10px 10px 0 0;
         }
-
         .cart-content {
             background-color: #ffffff;
             padding: 15px 20px 20px 20px;
@@ -46,18 +40,15 @@
             border-width: 1px 0;
             border-radius: 0 0 10px 10px;
         }
-
         .footer {
             position: fixed;
             bottom: 0;
             width: 100%;
         }
-
         .span-right {
             display: block;
             text-align: right;
         }
-
         @media (max-width:768px) {
             .carts {
                 margin: 0 10px 0 10px;
@@ -101,7 +92,6 @@
             </div>
         </div>
     </nav>
-
 
     <section class="carts">
         <div class="row gx-3 py-5">
@@ -188,7 +178,7 @@
         <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal with Tabs</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Checkout Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
                 </div>
@@ -235,12 +225,12 @@
                         <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="navSummaryTab"
                             tabindex="0"><br>
                             <h3>Summary Tab</h3>
-                            <p>This is the Summary tab content.</p>
+                            <p>Under development</p>
                         </div>
                         <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="navPaymentTab"
                             tabindex="0"><br>
                             <h3>Payment Tab</h3>
-                            <p>This is the Payment tab content.</p>
+                            <p>Under development</p>
                         </div>
                     </div>
                 </div>
@@ -248,287 +238,8 @@
         </div>
     </div>
 
-    <script>
-
-        let tempCart = [];
-        let originalPrice = 0;
-
-        let totalPrice = 0;
-        let couponApplied = false;
-        const biayaLayanan = 1000;
-
-        // Arrow functions with const only hoisted the variable declarations, not the wwhole function. Regular function does.
-        // so it must be declared above, before invoke it
-        const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-        function tempCartTotalPrice() {
-            totalPrice = tempCart.reduce((acc, product) => acc + (product.hargaint * product.qty), 0);}
-
-
-        function retrieveLocalStorage() {
-            let productInCart = JSON.parse(localStorage.getItem("cart") ?? []);
-
-            productInCart.forEach((product) => updateTempCart(product));
-            updateCartUi();
-        }
-
-        retrieveLocalStorage();
-
-        function updateTempCart(product) {
-            let indexTempProduct = tempCart.findIndex((productTempCart) => (productTempCart.nama === product.nama));
-            indexTempProduct !== -1 ? tempCart[indexTempProduct].qty++ : tempCart.push(product);
-
-            console.log(tempCart);
-            tempCartTotalPrice();
-        }
-
-        function updateCartUi() {
-            if (tempCart.length < 1) {
-                cartContent.innerHTML = `<div class="cart-content">
-                                            <div class="row align-items-center text-center">
-                                                <div class="col">
-                                                    <div class="d-flex flex-column align-items-center">
-                                                        <div class="mb-auto">
-                                                            <p class="fs-3">Your cart is empty</p>
-                                                        </div>
-                                                        <div>
-                                                            <a href="produk.html" class="btn btn-outline-success">
-                                                                <i class="bi bi-cart-fill"></i> Continue Shopping
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>`;
-                pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
-                couponApplied = false;
-                let couponInfo = document.getElementById("couponDetails");
-                couponInfo.style.display = "none";
-            } else {
-
-                let template_list = ``;
-                tempCart.forEach((product, index) => {
-                    template_list += `<div class="cart-content">
-                                        <div class="row">
-                                            <div class="col-md-2 text-center">
-                                                <img src="${product.foto}" height="90" width="90" />
-                                            </div>
-                                            <div class="col-md-10">
-                                                <h5 class="fw-normal text-md-start text-center mt-3 mt-md-0">${product.nama}</h5>
-                                                <div class="row">
-                                                    <div class="col-md-6 col-6 d-flex align-items-center">
-                                                        <span class="fw-bold">Rp${formatNumber(product.hargaint)}</span>
-                                                    </div>
-                                                    <div class="col-md-6 col-6 d-flex justify-content-end align-items-center">
-                                                        <button onclick="removeProductHandler(${index})" class="btn btn-white me-2">
-                                                            <i class="bi bi-trash" style="font-size: 22px;"></i>
-                                                        </button>
-                                                        <input class="form-control" type="number" style="width: 60px;" value="${product.qty}" min="1"
-                                                            onchange="updateTempCartQty(${index}, this.value)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                });
-                cartContent.innerHTML = template_list;
-                pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
-            }
-        }
-        
-        function updateTempCartQty(index, newValue) {
-            tempCart[index].qty = newValue;
-            tempCartTotalPrice();
-            updateCartUi();
-        }
-
-        function removeFromLocalStorage(productName) {
-            let productInCart = JSON.parse(localStorage.getItem("cart")) || [];
-            const productIndex = productInCart.findIndex(product => product.nama === productName);
-
-            if (productIndex !== -1) {
-                productInCart.splice(productIndex, 1);
-                localStorage.setItem("cart", JSON.stringify(productInCart))
-            }
-        }
-
-        function removeFromTempCart(index) {
-            if (tempCart[index].qty > 1) {
-                tempCart[index].qty--;
-            } else {
-                tempCart.splice(index, 1);
-            }
-        }
-
-        function removeProductHandler(index) {
-            totalPrice = totalPrice - tempCart[index].hargaint;
-            removeFromLocalStorage(tempCart[index].nama);
-            removeFromTempCart(index);
-            updateCartUi();
-        }
-
-        const detailCheckout = (label, value) => {
-            const row = document.createElement("div");
-            row.classList.add("row", "justify-content-end");
-
-            const colLabel = document.createElement("div");
-            const spanLabel = document.createElement("span")
-            spanLabel.textContent = label;
-            colLabel.classList.add("col-3");
-            colLabel.appendChild(spanLabel);
-
-            const colValue = document.createElement("div");
-            const spanValue = document.createElement("span")
-            spanValue.textContent = value;
-            colValue.classList.add("col-3", "span-right");
-            colValue.appendChild(spanValue)
-
-            row.appendChild(colLabel);
-            row.appendChild(colValue);
-
-            return row;
-        }
-
-        const popoverMessage = `Biaya layanan Rp${formatNumber(biayaLayanan)} diterapkan untuk terus memberikan pelayanan terbaik`;
-
-        function createPopover(message) {
-            const popover = document.createElement("a");
-            popover.setAttribute("tabindex", "0");
-            popover.classList.add("popover-dismiss");
-            popover.setAttribute("data-bs-toggle", "popover");
-            popover.setAttribute("role", "button");
-            popover.setAttribute("data-bs-trigger", "focus");
-            popover.setAttribute("data-bs-content", message);
-
-            const icon = document.createElement("i");
-            icon.classList.add("bi", "bi-question-circle");
-            popover.appendChild(icon);
-            return popover;
-        }
-
-        function checkCoupon() {
-            couponApplied ? alert("Coupon has already been applied") : redeemCoupon();
-        }
-        
-        
-        function redeemCoupon() {
-            let couponCheckoutPage = document.getElementById("couponCheckout");
-
-            couponCheckoutPage.innerHTML = "";
-            couponCheckoutPage.style.display = "block";
-
-            let couponInfo = document.getElementById("couponDetails");
-            let couponCode = document.getElementById("coupon").value.trim();
-
-            if (couponCode === "PRAKERJA") {
-                if (tempCart.length < 1) {
-                    alert("Please add a product first");
-                    return;
-                }
-
-                originalPrice = totalPrice;
-                totalPrice *= 0.5;
-                couponApplied = true;
-
-                couponInfo.innerHTML = `Original Price: Rp ${formatNumber(originalPrice)}<br>Discounted Price: Rp ${formatNumber(totalPrice)}<br>Coupon Applied: <span class="badge bg-secondary">${couponCode}</span> <button onclick="removeDiscount()" class="btn btn-white me-2"><i class="bi bi-trash"></i></button>`;
-                couponInfo.style.display = "block";
-
-                const potonganDiskon = detailCheckout("Potongan diskon: ", "Rp-" + formatNumber(originalPrice - totalPrice));
-                const voucherKode = detailCheckout("Voucher: ", couponCode);
-                couponCheckoutPage.appendChild(potonganDiskon);
-                couponCheckoutPage.appendChild(voucherKode);
-
-                updateCartUi();
-            } else {
-                alert("Invalid coupon code");
-            }
-
-        }
-
-        function removeDiscount() {
-            totalPrice = originalPrice
-            pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
-            couponApplied = false;
-            let couponInfo = document.getElementById("couponDetails");
-            couponInfo.style.display = "none";
-
-            const couponDetailsInfo = document.getElementById("couponCheckout");
-            couponDetailsInfo.style.display = "none";
-        }
-
-        const createProductCheckout = (product) => {
-            const row = document.createElement("div");
-            row.classList.add("row", "my-2", "py-2");
-
-            const colImage = document.createElement("div");
-            colImage.classList.add("col-md-2", "d-flex", "align-items-center", "justify-content-center");
-
-            const image = document.createElement("img");
-            image.setAttribute("src", product.foto);
-            image.setAttribute("height", "60");
-            image.setAttribute("width", "60");
-            image.classList.add("img-fluid", "rounded");
-
-            const colDetails = document.createElement("div");
-            colDetails.classList.add("col-md-10", "d-flex", "justify-content-between");
-
-            const productTitle = document.createElement("h5");
-            productTitle.classList.add("fw-normal", "text-md-start", "text-center", "mt-3", "mt-md-0")
-            productTitle.textContent = product.nama;
-
-            const productQty = document.createElement("span");
-            productQty.classList.add("fw-semibold");
-            productQty.textContent = `${product.qty} x Rp${formatNumber(product.hargaint)}`;
-
-            colImage.appendChild(image);
-            colDetails.appendChild(productTitle);
-            colDetails.appendChild(productQty);
-            row.appendChild(colImage);
-            row.appendChild(colDetails);
-
-            return row;
-
-        }
-
-
-        function orderedProduct(products) {
-            const checkoutCartModal = document.getElementById('checkoutCartModal');
-            checkoutCartModal.innerHTML = "";
-            products.forEach((product, index) => {
-                const item = createProductCheckout(product);
-                checkoutCartModal.appendChild(item)
-            });
-        }
-
-        const checkoutHandler = () => {
-            orderedProduct(tempCart)
-            const modal = new bootstrap.Modal(document.getElementById("checkoutModal"));
-            modal.show();
-            
-            let detailsCheckout = document.getElementById("detailsCheckout");
-            detailsCheckout.innerHTML = "";
-
-  
-            
-            let subTotal = detailCheckout("Subtotal: ", "Rp" + formatNumber(originalPrice));
-            let biayaLayananCheckout = detailCheckout("Biaya layanan: ", "Rp" + formatNumber(biayaLayanan));
-            let biayaLayananPopover = biayaLayananCheckout.querySelector(".col-3 span");
-            biayaLayananPopover.appendChild(createPopover(popoverMessage));
-            
-            detailsCheckout.appendChild(subTotal);
-            detailsCheckout.appendChild(biayaLayananCheckout);
-            
-            priceCheckout.innerHTML = "Rp " + formatNumber(totalPrice + biayaLayanan);
-            
-            const popover = new bootstrap.Popover(document.querySelector('.popover-dismiss'), {
-                trigger: 'focus',
-                placement: 'bottom'
-            })
-        }
-
-        document.getElementById("checkoutButton").addEventListener("click", checkoutHandler)
-
-    </script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/cart.js"></script>
 
 </body>
 
