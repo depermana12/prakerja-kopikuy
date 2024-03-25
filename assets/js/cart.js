@@ -4,12 +4,15 @@ let originalPrice = 0;
 let couponApplied = false;
 const biayaLayanan = 1000;
 
-originalPrice = totalPrice;
-
 // Arrow functions with const only hoisted the variable declarations, not the wwhole function. Regular function does.
 // so it must be declared above, before invoke it
-const formatNumber = (num) =>
-  num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const formatCurrency = (num) => 
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(num);
+
 
 function tempCartTotalPrice() {
   totalPrice = tempCart.reduce(
@@ -57,7 +60,7 @@ function updateCartUi() {
                                                 </div>
                                             </div>
                                         </div>`;
-    pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
+    pricePlaceHolder.innerHTML = formatCurrency(totalPrice);
     couponApplied = false;
     const couponInfo = document.getElementById("couponDetails");
     couponInfo.style.display = "none";
@@ -77,7 +80,7 @@ function updateCartUi() {
                                                 }</h5>
                                                 <div class="row">
                                                     <div class="col-md-6 col-6 d-flex align-items-center">
-                                                        <span class="fw-bold">Rp${formatNumber(
+                                                        <span class="fw-bold">${formatCurrency(
                                                           product.hargaint
                                                         )}</span>
                                                     </div>
@@ -96,14 +99,17 @@ function updateCartUi() {
                                     </div>`;
     });
     cartContent.innerHTML = template_list;
-    pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
+    pricePlaceHolder.innerHTML = formatCurrency(totalPrice);
   }
 }
 
 function updateTempCartQty(index, newValue) {
   tempCart[index].qty = newValue;
-  removeDiscount();
   tempCartTotalPrice();
+  originalPrice = totalPrice;
+  if (couponApplied){
+    redeemCoupon();
+  }
   updateCartUi();
 }
 
@@ -131,8 +137,11 @@ function removeProductHandler(index) {
   totalPrice = totalPrice - tempCart[index].hargaint;
   removeFromLocalStorage(tempCart[index].nama);
   removeFromTempCart(index);
-  removeDiscount();
   tempCartTotalPrice();
+  originalPrice = totalPrice;
+  if (couponApplied){
+    redeemCoupon();
+  }
   updateCartUi();
 }
 
@@ -157,7 +166,7 @@ const createDetailsCheckoutEl = (label, value) => {
   return row;
 };
 
-const popoverMessage = `Biaya layanan Rp${formatNumber(
+const popoverMessage = `Biaya layanan ${formatCurrency(
   biayaLayanan
 )} diterapkan untuk terus memberikan pelayanan terbaik`;
 
@@ -202,16 +211,16 @@ function redeemCoupon() {
 
     totalPrice *= 0.5;
 
-    couponInfo.innerHTML = `Original Price: Rp ${formatNumber(
+    couponInfo.innerHTML = `Original Price: ${formatCurrency(
       originalPrice
-    )}<br>Discounted Price: Rp ${formatNumber(
+    )}<br>Discounted Price: ${formatCurrency(
       totalPrice
     )}<br>Coupon Applied: <span class="badge bg-secondary">${couponCode}</span> <button onclick="removeDiscount()" class="btn btn-white me-2"><i class="bi bi-trash"></i></button>`;
     couponInfo.style.display = "block";
 
     const potonganDiskon = createDetailsCheckoutEl(
       "Potongan diskon: ",
-      "Rp-" + formatNumber(originalPrice - totalPrice)
+      "-" + formatCurrency(originalPrice - totalPrice)
     );
     const voucherKode = createDetailsCheckoutEl("Voucher: ", couponCode);
 
@@ -226,7 +235,8 @@ function redeemCoupon() {
 
 function removeDiscount() {
   totalPrice = originalPrice;
-  pricePlaceHolder.innerHTML = "Rp " + formatNumber(totalPrice);
+  tempCartTotalPrice();
+  pricePlaceHolder.innerHTML = formatCurrency(totalPrice);
   couponApplied = false;
 
   const couponInfo = document.getElementById("couponDetails");
@@ -269,7 +279,7 @@ const createProductEl = (product) => {
 
   const productQty = document.createElement("span");
   productQty.classList.add("fw-semibold");
-  productQty.textContent = `${product.qty} x Rp${formatNumber(
+  productQty.textContent = `${product.qty} x ${formatCurrency(
     product.hargaint
   )}`;
 
@@ -304,11 +314,11 @@ const checkoutHandler = () => {
 
   let subTotal = createDetailsCheckoutEl(
     "Subtotal: ",
-    "Rp" + formatNumber(originalPrice)
+    formatCurrency(originalPrice)
   );
   let biayaLayananCheckout = createDetailsCheckoutEl(
     "Biaya layanan: ",
-    "Rp" + formatNumber(biayaLayanan)
+    formatCurrency(biayaLayanan)
   );
   let biayaLayananPopover = biayaLayananCheckout.querySelector(".col-3 span");
   biayaLayananPopover.appendChild(createPopover(popoverMessage));
@@ -316,7 +326,7 @@ const checkoutHandler = () => {
   detailsCheckout.appendChild(subTotal);
   detailsCheckout.appendChild(biayaLayananCheckout);
 
-  priceCheckout.innerHTML = "Rp " + formatNumber(totalPrice + biayaLayanan);
+  priceCheckout.innerHTML = formatCurrency(totalPrice + biayaLayanan);
 
   const popover = new bootstrap.Popover(
     document.querySelector(".popover-dismiss"),
